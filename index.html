@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Air Quality Gamified Dashboard</title>
+    
+    <!-- Google Fonts: Inter (Data) & Nunito (Headers) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* DOST Official Color Palette */
+            --dost-navy: #002855;
+            --dost-gold: #F2A900;
+            --bg-color: #eef2f5;
+            --card-bg: #ffffff;
+            --text-main: #333333;
+            --text-muted: #6c757d;
+            
+            /* Status Colors */
+            --safe-green: #28a745;
+            --dost-cyan: #00c6ff;
+            --danger-red: #dc3545;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        /* Institutional Header */
+        .header {
+            background-color: var(--dost-navy);
+            color: white;
+            width: 100%;
+            padding: 25px 20px 15px 20px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-bottom: 5px solid var(--dost-gold);
+            box-sizing: border-box;
+        }
+
+        .header-title-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .header-logo {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 50%;
+            padding: 3px;
+            box-shadow: 0 0 10px rgba(0, 198, 255, 0.5);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-family: 'Nunito', sans-serif;
+            font-size: 32px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #ffffff 0%, #00c6ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            font-family: 'Nunito', sans-serif;
+            margin: 5px 0 15px 0;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--dost-cyan);
+        }
+
+        /* Telemetry Grid Layout */
+        .dashboard-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 30px 20px;
+            max-width: 1200px;
+        }
+
+        /* Enterprise Sensor Cards */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 220px;
+            text-align: center;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 12px 24px rgba(0, 40, 85, 0.2);
+            border-color: var(--dost-cyan);
+        }
+
+        .card-header {
+            font-family: 'Nunito', sans-serif;
+            padding: 12px 0;
+            font-size: 16px;
+            font-weight: 800;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background-color: var(--dost-navy);
+        }
+
+        .card-body {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-grow: 1;
+        }
+
+        .card .value {
+            font-size: 40px;
+            font-weight: 900;
+            color: var(--text-main);
+            margin: 0;
+            line-height: 1;
+            letter-spacing: -1px;
+        }
+
+        .card .unit {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-top: 5px;
+            margin-bottom: 10px;
+        }
+
+        .card-icon {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .action-text {
+            font-size: 13px;
+            font-weight: 700;
+            padding: 12px;
+            background-color: #e3f2fd;
+            border-top: 1px solid #bbdefb;
+            color: #1565c0;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover .action-text {
+            background-color: #2196f3;
+            color: white;
+        }
+
+        /* Game Modal Overlay */
+        .game-overlay {
+            display: none; 
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 40, 85, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .game-overlay.show {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .game-container {
+            background: white;
+            border-top: 6px solid var(--dost-gold);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 95%;
+        }
+
+        .game-header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .game-title {
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--dost-navy);
+            margin: 0;
+        }
+
+        .game-stats {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .game-stats span {
+            color: var(--dost-navy);
+            font-size: 18px;
+        }
+
+        canvas {
+            background-color: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: none; /* Hide cursor while playing */
+            touch-action: none; /* Prevent scrolling on touch */
+        }
+
+        .game-controls {
+            margin-top: 15px;
+            display: flex;
+            gap: 15px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn {
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-close {
+            background-color: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-close:hover {
+            background-color: #ccc;
+        }
+
+        .btn-play {
+            background-color: var(--dost-navy);
+            color: white;
+            box-shadow: 0 4px 6px rgba(0,40,85,0.3);
+        }
+
+        .btn-play:hover {
+            background-color: #003b80;
+            transform: translateY(-2px);
+        }
+
+        /* Screens inside game canvas */
+        .canvas-overlay {
+            position: absolute;
+            width: 350px;
+            height: 450px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.9);
+            border-radius: 8px;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .canvas-wrapper {
+            position: relative;
+            width: 350px;
+            height: 450px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 { font-size: 24px; }
+            .card { width: 100%; max-width: 300px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="header-title-container">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Department_of_Science_and_Technology_%28DOST%29_-_Seal.svg/240px-Department_of_Science_and_Technology_%28DOST%29_-_Seal.svg.png" alt="DOST Logo" class="header-logo" onerror="this.style.display='none'">
+            <h1>Interactive Telemetry</h1>
+        </div>
+        <p>Welcome! Click any sensor card to play its simulation minigame.</p>
+    </div>
+
+    <div class="dashboard-container">
+        <!-- Dashboard Cards linked to specific game modes -->
+        <div class="card" onclick="openGame('pm25')">
+            <div class="card-header">PM2.5 DUST</div>
+            <div class="card-body">
+                <div class="value" id="val-pm25">12.4</div>
+                <div class="unit">µg/m³</div>
+                <div class="card-icon">🌫️</div>
+            </div>
+            <div class="action-text">▶ Play Filter Sim</div>
+        </div>
+
+        <div class="card" onclick="openGame('co2')">
+            <div class="card-header">TRUE CO2</div>
+            <div class="card-body">
+                <div class="value" id="val-co2">415</div>
+                <div class="unit">ppm</div>
+                <div class="card-icon">💨</div>
+            </div>
+            <div class="action-text">▶ Play Ventilation Sim</div>
+        </div>
+
+        <div class="card" onclick="openGame('voc')">
+            <div class="card-header">VOC LEVELS</div>
+            <div class="card-body">
+                <div class="value" id="val-voc">105</div>
+                <div class="unit">Analog</div>
+                <div class="card-icon">☣️</div>
+            </div>
+            <div class="action-text">▶ Play Hazmat Dodge</div>
+        </div>
+
+        <div class="card" onclick="openGame('temp')">
+            <div class="card-header">TEMPERATURE</div>
+            <div class="card-body">
+                <div class="value" id="val-temp">24.5</div>
+                <div class="unit">°C</div>
+                <div class="card-icon">🌡️</div>
+            </div>
+            <div class="action-text">▶ Play Thermal Balancer</div>
+        </div>
+
+        <div class="card" onclick="openGame('hum')">
+            <div class="card-header">HUMIDITY</div>
+            <div class="card-body">
+                <div class="value" id="val-hum">55.0</div>
+                <div class="unit">% RH</div>
+                <div class="card-icon">💧</div>
+            </div>
+            <div class="action-text">▶ Play Moisture Control</div>
+        </div>
+    </div>
+
+    <div class="game-overlay" id="gameModal">
+        <div class="game-container">
+            <div class="game-header">
+                <h2 class="game-title" id="gameTitle">Game Title</h2>
+                <div class="game-stats">
+                    Score: <span id="scoreDisplay">0</span> | Lives: <span id="livesDisplay">3</span>
+                </div>
+            </div>
+
+            <div class="canvas-wrapper">
+                <canvas id="gameCanvas" width="350" height="450"></canvas>
+                
+                <!-- Start Screen Overlay -->
+                <div id="startScreen" class="canvas-overlay">
+                    <h3 id="startTitle" style="font-family:'Nunito'; color:#002855; font-size:22px; margin-top:0;">Ready?</h3>
+                    <p id="startInstructions" style="font-weight:600; color:#666; font-size:15px;">Instructions here.</p>
+                    <button class="btn btn-play" onclick="startGame()">Start Game</button>
+                </div>
+
+                <!-- Game Over Screen Overlay -->
+                <div id="gameOverScreen" class="canvas-overlay" style="display:none;">
+                    <h3 style="font-family:'Nunito'; color:#dc3545; font-size:28px; margin-top:0;">GAME OVER</h3>
+                    <p style="font-weight:700; color:#333; font-size:18px;">Final Score: <span id="finalScore" style="color:#002855; font-size:24px;">0</span></p>
+                    <button class="btn btn-play" onclick="startGame()">Play Again</button>
+                </div>
+            </div>
+
+            <div class="game-controls">
+                <button class="btn btn-close" onclick="closeGame()">Exit to Dashboard</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Fake telemetry to keep dashboard alive
+        setInterval(() => {
+            document.getElementById('val-pm25').innerText = (10 + Math.random() * 5).toFixed(1);
+            document.getElementById('val-co2').innerText = Math.floor(400 + Math.random() * 50);
+            document.getElementById('val-voc').innerText = Math.floor(100 + Math.random() * 20);
+            document.getElementById('val-temp').innerText = (24 + Math.random() * 1).toFixed(1);
+            document.getElementById('val-hum').innerText = (50 + Math.random() * 5).toFixed(1);
+        }, 3000);
+
+        // Game Configuration Dictionary
+        const GAME_CONFIGS = {
+            'pm25': {
+                title: 'Dust Scrubber',
+                instructions: 'Catch the Dust (🌫️) to filter it.<br>Avoid dropping dust!',
+                goodEmoji: '🌫️', // Target
+                badEmoji: '❌',  // Hazard (optional, let's just make them drop dust)
+                targetGood: true, // You want to catch good
+                missGoodPenalty: true, // Missing good costs a life
+                speed: 3
+            },
+            'co2': {
+                title: 'O2 Balancer',
+                instructions: 'Catch Fresh Air (🍃).<br>Avoid Toxic CO2 (💨)!',
+                goodEmoji: '🍃',
+                badEmoji: '💨',
+                targetGood: true,
+                missGoodPenalty: false, // Only hitting bad costs a life here
+                speed: 3.5
+            },
+            'voc': {
+                title: 'Hazmat Dodge',
+                instructions: 'Catch Clean Filters (🛡️).<br>DODGE the Biohazards (☣️)!',
+                goodEmoji: '🛡️',
+                badEmoji: '☣️',
+                targetGood: true,
+                missGoodPenalty: false,
+                speed: 4
+            },
+            'temp': {
+                title: 'Thermal Cooler',
+                instructions: 'Catch the Ice (❄️) to cool down.<br>Avoid the Fire (🔥)!',
+                goodEmoji: '❄️',
+                badEmoji: '🔥',
+                targetGood: true,
+                missGoodPenalty: false,
+                speed: 4.5
+            },
+            'hum': {
+                title: 'Moisture Control',
+                instructions: 'Catch Water Drops (💧).<br>Avoid Mold Spores (🦠)!',
+                goodEmoji: '💧',
+                badEmoji: '🦠',
+                targetGood: true,
+                missGoodPenalty: false,
+                speed: 3.5
+            }
+        };
+
+        // Engine Variables
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        let animationId = null;
+        let currentMode = null;
+        let isPlaying = false;
+        
+        let score = 0;
+        let lives = 3;
+        let entities = [];
+        let frameCount = 0;
+
+        // Player Object
+        const player = {
+            x: canvas.width / 2 - 30,
+            y: canvas.height - 40,
+            width: 60,
+            height: 15,
+            color: '#002855' // DOST Navy
+        };
+
+        // Mouse Controls
+        canvas.addEventListener('mousemove', (e) => {
+            if(!isPlaying) return;
+            const rect = canvas.getBoundingClientRect();
+            // Map mouse to canvas scale
+            const scaleX = canvas.width / rect.width;
+            const mouseX = (e.clientX - rect.left) * scaleX;
+            player.x = mouseX - player.width / 2;
+            
+            // Boundaries
+            if (player.x < 0) player.x = 0;
+            if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+        });
+
+        // Touch Controls
+        canvas.addEventListener('touchmove', (e) => {
+            if(!isPlaying) return;
+            e.preventDefault(); // Prevent scrolling while playing
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const touchX = (e.touches[0].clientX - rect.left) * scaleX;
+            player.x = touchX - player.width / 2;
+            
+            // Boundaries
+            if (player.x < 0) player.x = 0;
+            if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+        }, { passive: false });
+
+        function openGame(mode) {
+            currentMode = GAME_CONFIGS[mode];
+            document.getElementById('gameTitle').innerText = currentMode.title;
+            document.getElementById('startTitle').innerText = currentMode.title;
+            document.getElementById('startInstructions').innerHTML = currentMode.instructions;
+            
+            document.getElementById('gameModal').classList.add('show');
+            document.getElementById('startScreen').style.display = 'flex';
+            document.getElementById('gameOverScreen').style.display = 'none';
+            
+            // Draw initial static state
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawPlayer();
+        }
+
+        function closeGame() {
+            document.getElementById('gameModal').classList.remove('show');
+            isPlaying = false;
+            cancelAnimationFrame(animationId);
+        }
+
+        function startGame() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('gameOverScreen').style.display = 'none';
+            
+            score = 0;
+            lives = 3;
+            entities = [];
+            frameCount = 0;
+            player.x = canvas.width / 2 - player.width / 2;
+            
+            updateHUD();
+            isPlaying = true;
+            gameLoop();
+        }
+
+        function updateHUD() {
+            document.getElementById('scoreDisplay').innerText = score;
+            document.getElementById('livesDisplay').innerText = lives;
+        }
+
+        function gameOver() {
+            isPlaying = false;
+            cancelAnimationFrame(animationId);
+            document.getElementById('gameOverScreen').style.display = 'flex';
+            document.getElementById('finalScore').innerText = score;
+        }
+
+        function spawnEntity() {
+            // Spawn rate increases slightly over time
+            const spawnRate = Math.max(30, 60 - Math.floor(score / 5)); 
+            
+            if (frameCount % spawnRate === 0) {
+                // Determine if it's a good or bad entity (70% good, 30% bad)
+                // PM2.5 mode only drops dust (good to catch)
+                const isGood = currentMode.title === 'Dust Scrubber' ? true : Math.random() > 0.3;
+                
+                entities.push({
+                    x: Math.random() * (canvas.width - 24) + 12,
+                    y: -20,
+                    type: isGood ? 'good' : 'bad',
+                    emoji: isGood ? currentMode.goodEmoji : currentMode.badEmoji,
+                    speed: currentMode.speed + Math.random() * 2 + (score * 0.05), // Speeds up
+                    size: 24 // Emoji size
+                });
+            }
+        }
+
+        function drawPlayer() {
+            ctx.fillStyle = player.color;
+            ctx.beginPath();
+            ctx.roundRect(player.x, player.y, player.width, player.height, 8);
+            ctx.fill();
+
+            // Draw a glowing "catcher" beam effect
+            let grad = ctx.createLinearGradient(0, player.y - 20, 0, player.y);
+            grad.addColorStop(0, 'rgba(0, 198, 255, 0)');
+            grad.addColorStop(1, 'rgba(0, 198, 255, 0.4)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(player.x, player.y - 20, player.width, 20);
+        }
+
+        function gameLoop() {
+            if (!isPlaying) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            frameCount++;
+
+            drawPlayer();
+            spawnEntity();
+
+            // Update and Draw Entities
+            for (let i = entities.length - 1; i >= 0; i--) {
+                let ent = entities[i];
+                ent.y += ent.speed;
+
+                // Draw Emoji
+                ctx.font = `${ent.size}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(ent.emoji, ent.x, ent.y);
+
+                // Collision Detection (Simple Box/Circle intersection)
+                const hitX = ent.x > player.x - 10 && ent.x < player.x + player.width + 10;
+                const hitY = ent.y + ent.size/2 > player.y && ent.y < player.y + player.height;
+
+                if (hitX && hitY) {
+                    // Caught!
+                    if (ent.type === 'good') {
+                        score += 10;
+                    } else {
+                        lives -= 1; // Caught a bad thing
+                        drawHitFlash();
+                    }
+                    entities.splice(i, 1);
+                    updateHUD();
+                } else if (ent.y > canvas.height + 20) {
+                    // Missed (Fell off screen)
+                    if (ent.type === 'good' && currentMode.missGoodPenalty) {
+                        lives -= 1; // Punish missing good things (e.g. letting dust escape)
+                        drawHitFlash();
+                    }
+                    entities.splice(i, 1);
+                    updateHUD();
+                }
+            }
+
+            if (lives <= 0) {
+                gameOver();
+            } else {
+                animationId = requestAnimationFrame(gameLoop);
+            }
+        }
+
+        function drawHitFlash() {
+            // Visual feedback for taking damage
+            ctx.fillStyle = 'rgba(220, 53, 69, 0.3)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+    </script>
+</body>
+</html>
