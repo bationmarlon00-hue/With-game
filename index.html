@@ -1,2287 +1,1145 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Air Quality & Temperature Monitoring System</title>
-    
-    <!-- Google Fonts: Inter (Data) & Nunito (Bubble/Rounded for Headers) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Air Quality & Temperature Monitoring System</title>
+    
+    <!-- Google Fonts: Inter (Data) & Nunito (Bubble/Rounded for Headers) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
 
-    <!-- Apache ECharts for the Line and Donut Graphs -->
-    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+    <!-- Apache ECharts for the Line and Donut Graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 
-    <style>
-        :root {
-            /* Enterprise Dark Mode Palette */
-            --bg-base: #121212;
-            --panel-bg: #1e1e1e;
-            --border-color: #2d2d2d;
-            --text-main: #e0e0e0;
-            --text-muted: #888888;
-            --dost-blue: #2196f3;
-            --dost-cyan: #00ffff;
-            
-            /* Status Colors */
-            --status-safe: #4caf50;
-            --status-warn: #ff9800;
-            --status-danger: #f44336;
-        }
+    <style>
+        :root {
+            /* Enterprise Dark Mode Palette */
+            --bg-base: #121212;
+            --panel-bg: #1e1e1e;
+            --border-color: #2d2d2d;
+            --text-main: #e0e0e0;
+            --text-muted: #888888;
+            --dost-blue: #2196f3;
+            --dost-cyan: #00ffff;
+            
+            /* Status Colors */
+            --status-safe: #4caf50;
+            --status-warn: #ff9800;
+            --status-danger: #f44336;
+        }
 
-        body {
-            /* Modern, Clean Dashboard Font */
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-base);
-            color: var(--text-main);
-            margin: 0;
-            padding: 20px;
-            overflow-x: hidden;
-        }
+        body {
+            /* Modern, Clean Dashboard Font */
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            overflow-x: hidden;
+        }
 
-        /* Top Navigation / Header */
-        .top-nav {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 15px;
-            margin-bottom: 25px;
-        }
+        /* Top Navigation / Header */
+        .top-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
 
-        /* Container to group the logo and title together */
-        .brand-container {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
+        /* Container to group the logo and title together */
+        .brand-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
 
-        .brand-logo {
-            width: 50px;
-            height: 50px;
-            object-fit: contain;
-            border-radius: 50%;
-            background-color: white; 
-            padding: 3px;
-            box-shadow: 0 0 12px rgba(0, 198, 255, 0.4);
-        }
+        .brand-logo {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            border-radius: 50%;
+            background-color: white; 
+            padding: 3px;
+            box-shadow: 0 0 12px rgba(0, 198, 255, 0.4);
+        }
 
-        .top-nav h1 {
-            margin: 0;
-            font-size: 38px; 
-            font-family: 'Nunito', sans-serif; /* Rounded, bubble-like font */
-            font-weight: 900; 
-            /* Premium Deep Blue to Cyan Gradient */
-            background: linear-gradient(135deg, #0072ff 0%, #00c6ff 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            filter: drop-shadow(0px 2px 4px rgba(0, 114, 255, 0.2));
-        }
+        .top-nav h1 {
+            margin: 0;
+            font-size: 38px; 
+            font-family: 'Nunito', sans-serif; /* Rounded, bubble-like font */
+            font-weight: 900; 
+            /* Premium Deep Blue to Cyan Gradient */
+            background: linear-gradient(135deg, #0072ff 0%, #00c6ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            filter: drop-shadow(0px 2px 4px rgba(0, 114, 255, 0.2));
+        }
 
-        /* Replaced Sub-tabs with a radiant Welcome Text */
-        .welcome-text {
-            font-family: 'Nunito', sans-serif;
-            font-size: 20px; 
-            font-weight: 700;
-            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-align: right;
-            max-width: 400px;
-            line-height: 1.3;
-        }
+        /* Replaced Sub-tabs with a radiant Welcome Text */
+        .welcome-text {
+            font-family: 'Nunito', sans-serif;
+            font-size: 20px; 
+            font-weight: 700;
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: right;
+            max-width: 400px;
+            line-height: 1.3;
+        }
 
-        /* Main Grid Layout */
-        .dashboard {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
+        /* Main Grid Layout */
+        .dashboard {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
 
-        /* Top Row: Metric Cards */
-        .metrics-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
+        /* Top Row: Metric Cards */
+        .metrics-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
 
-        .metric-card {
-            background-color: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px; 
-            padding: 18px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-            cursor: pointer; 
-            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-        }
+        .metric-card {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px; 
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            cursor: pointer; 
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
 
-        .metric-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(0, 242, 254, 0.15);
-            border-color: rgba(0, 242, 254, 0.4);
-        }
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 242, 254, 0.15);
+            border-color: rgba(0, 242, 254, 0.4);
+        }
 
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
 
-        .card-icon {
-            background-color: rgba(33, 150, 243, 0.1);
-            color: var(--dost-blue);
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 20px;
-        }
+        .card-icon {
+            background-color: rgba(33, 150, 243, 0.1);
+            color: var(--dost-blue);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 20px;
+        }
 
-        .card-title {
-            font-size: 16px; 
-            font-weight: 700; 
-            margin-top: 12px;
-            letter-spacing: 0.5px;
-        }
+        .card-title {
+            font-size: 16px; 
+            font-weight: 700; 
+            margin-top: 12px;
+            letter-spacing: 0.5px;
+        }
 
-        .card-subtext {
-            font-size: 12px;
-            font-weight: 400;
-            color: var(--text-muted);
-            margin-top: 4px;
-        }
+        .card-subtext {
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
 
-        .card-value {
-            font-size: 36px; 
-            font-weight: 800; 
-            color: var(--dost-blue);
-            margin: 15px 0 12px 0;
-            letter-spacing: -1px; 
-        }
+        .card-value {
+            font-size: 36px; 
+            font-weight: 800; 
+            color: var(--dost-blue);
+            margin: 15px 0 12px 0;
+            letter-spacing: -1px; 
+        }
 
-        .progress-track {
-            width: 100%;
-            height: 8px; 
-            background-color: #333;
-            border-radius: 4px;
-            overflow: hidden;
-            margin-bottom: 12px;
-        }
+        .progress-track {
+            width: 100%;
+            height: 8px; 
+            background-color: #333;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
 
-        .progress-fill {
-            height: 100%;
-            width: 0%;
-            background-color: var(--status-safe);
-            transition: width 0.5s ease, background-color 0.5s ease;
-        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background-color: var(--status-safe);
+            transition: width 0.5s ease, background-color 0.5s ease;
+        }
 
-        .action-text {
-            font-size: 12px; 
-            font-weight: 600;
-            margin-top: 5px;
-            margin-bottom: 12px;
-            color: var(--text-muted);
-        }
+        .action-text {
+            font-size: 12px; 
+            font-weight: 600;
+            margin-top: 5px;
+            margin-bottom: 12px;
+            color: var(--text-muted);
+        }
 
-        /* NEW: Game Button inside the card */
-        .play-btn {
-            width: 100%;
-            padding: 10px;
-            background: rgba(33, 150, 243, 0.1);
-            color: var(--dost-blue);
-            border: 1px solid rgba(33, 150, 243, 0.3);
-            border-radius: 6px;
-            font-family: 'Inter', sans-serif;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+        /* Game Button inside the card */
+        .play-btn {
+            width: 100%;
+            padding: 10px;
+            background: rgba(33, 150, 243, 0.1);
+            color: var(--dost-blue);
+            border: 1px solid rgba(33, 150, 243, 0.3);
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
-        .play-btn:hover {
-            background: var(--dost-blue);
-            color: white;
-            box-shadow: 0 0 10px rgba(33, 150, 243, 0.5);
-            border-color: var(--dost-blue);
-        }
+        .play-btn:hover {
+            background: var(--dost-blue);
+            color: white;
+            box-shadow: 0 0 10px rgba(33, 150, 243, 0.5);
+            border-color: var(--dost-blue);
+        }
 
-        /* Bottom Row: Charts */
-        .charts-row {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 15px;
-        }
+        /* Bottom Row: Charts */
+        .charts-row {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 15px;
+        }
 
-        .chart-panel {
-            background-color: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-            display: flex;
-            flex-direction: column;
-            transition: all 0.3s ease;
-        }
+        .chart-panel {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
 
-        .chart-header-wrap {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
+        .chart-header-wrap {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
 
-        .chart-title {
-            font-size: 18px; 
-            font-weight: 700;
-            color: var(--text-main);
-            letter-spacing: 0.5px;
-            margin: 0;
-        }
+        .chart-title {
+            font-size: 18px; 
+            font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: 0.5px;
+            margin: 0;
+        }
 
-        /* Expansion Styles */
-        .expand-btn {
-            background: none;
-            border: none;
-            color: var(--dost-blue);
-            cursor: pointer;
-            font-size: 22px;
-            transition: transform 0.2s ease, color 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        /* Expansion Styles */
+        .expand-btn {
+            background: none;
+            border: none;
+            color: var(--dost-blue);
+            cursor: pointer;
+            font-size: 22px;
+            transition: transform 0.2s ease, color 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-        .expand-btn:hover {
-            color: var(--dost-cyan);
-            transform: scale(1.1);
-        }
-        
-        .chart-modal-content {
-            max-width: 1000px;
-            width: 95%;
-        }
+        .expand-btn:hover {
+            color: var(--dost-cyan);
+            transform: scale(1.1);
+        }
+        
+        .chart-modal-content {
+            max-width: 1000px;
+            width: 95%;
+        }
 
-        .donut-container {
-            width: 100%;
-            height: 230px; 
-        }
+        .donut-container {
+            width: 100%;
+            height: 230px; 
+        }
 
-        .line-container {
-            width: 100%;
-            height: 320px; 
-        }
+        .line-container {
+            width: 100%;
+            height: 320px; 
+        }
 
-        /* Dynamic Health Status Information Box */
-        .health-info {
-            margin-top: 15px;
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            text-align: center;
-            background-color: rgba(255, 255, 255, 0.05);
-            color: var(--text-muted);
-            border: 1px solid var(--border-color);
-            transition: all 0.4s ease;
-            line-height: 1.5;
-        }
+        /* Dynamic Health Status Information Box */
+        .health-info {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+            transition: all 0.4s ease;
+            line-height: 1.5;
+        }
 
-        /* System Info Footer */
-        .footer-info {
-            text-align: right;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text-muted);
-            margin-top: 10px;
-            padding-bottom: 20px;
-        }
+        /* System Info Footer */
+        .footer-info {
+            text-align: right;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-top: 10px;
+            padding-bottom: 20px;
+        }
 
-        /* Modal Styles */
-        .modal-overlay {
-            display: none; 
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(5px);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
+        /* Modal Styles */
+        .modal-overlay {
+            display: none; 
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
 
-        .modal-overlay.show {
-            display: flex;
-            opacity: 1;
-        }
+        .modal-overlay.show {
+            display: flex;
+            opacity: 1;
+        }
 
-        .modal-content {
-            background-color: var(--panel-bg);
-            border: 1px solid var(--dost-blue);
-            border-radius: 16px;
-            width: 90%;
-            max-width: 600px;
-            padding: 30px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-            position: relative;
-            transform: translateY(20px);
-            transition: transform 0.3s ease;
-        }
+        .modal-content {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--dost-blue);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 600px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            position: relative;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
 
-        .modal-overlay.show .modal-content {
-            transform: translateY(0);
-        }
+        .modal-overlay.show .modal-content {
+            transform: translateY(0);
+        }
 
-        .modal-close {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            font-size: 24px;
-            cursor: pointer;
-            transition: color 0.2s ease;
-        }
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 24px;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
 
-        .modal-close:hover {
-            color: var(--text-main);
-        }
+        .modal-close:hover {
+            color: var(--text-main);
+        }
 
-        .modal-header {
-            font-size: 24px;
-            font-weight: 800;
-            color: var(--dost-blue);
-            margin-bottom: 15px;
-            margin-top: 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        .modal-header {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--dost-blue);
+            margin-bottom: 15px;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-        .modal-body {
-            font-size: 15px;
-            line-height: 1.6;
-            color: var(--text-main);
-            margin-bottom: 20px;
-        }
+        .modal-body {
+            font-size: 15px;
+            line-height: 1.6;
+            color: var(--text-main);
+            margin-bottom: 20px;
+        }
 
-        .modal-source {
-            font-size: 13px;
-            line-height: 1.5;
-            color: var(--text-muted);
-            background-color: rgba(255, 255, 255, 0.05);
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid var(--status-warn);
-        }
-        
-        .modal-source strong {
-            color: var(--e0e0e0);
-        }
+        .modal-source {
+            font-size: 13px;
+            line-height: 1.5;
+            color: var(--text-muted);
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--status-warn);
+        }
+        
+        .modal-source strong {
+            color: var(--e0e0e0);
+        }
 
-        /* -------------------------------------
-           GAME SPECIFIC STYLES 
-           ------------------------------------- */
-        .game-stats {
-            text-align: center;
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--text-muted);
-            margin-bottom: 15px;
-        }
+        /* -------------------------------------
+           GAME SPECIFIC STYLES 
+           ------------------------------------- */
+        .game-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+            background: rgba(255,255,255,0.05);
+            padding: 10px 15px;
+            border-radius: 8px;
+        }
 
-        .game-stats span {
-            font-size: 18px;
-        }
+        .game-stats span {
+            font-size: 16px;
+        }
 
-        .canvas-wrapper {
-            position: relative;
-            width: 100%;
-            max-width: 350px;
-            margin: 0 auto;
-        }
+        .canvas-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 350px;
+            margin: 0 auto;
+        }
 
-        canvas {
-            background-color: #121212; /* Dark theme background for game */
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            cursor: none; 
-            touch-action: none; 
-            width: 100%; /* Makes it responsive */
-            aspect-ratio: 350 / 450; 
-        }
+        canvas {
+            background-color: #121212; 
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: none; 
+            touch-action: none; 
+            width: 100%; 
+            aspect-ratio: 350 / 450; 
+        }
 
-        .canvas-overlay {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: rgba(30, 30, 30, 0.9);
-            border-radius: 8px;
-            text-align: center;
-            padding: 20px;
-            box-sizing: border-box;
-        }
+        .canvas-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(30, 30, 30, 0.9);
+            border-radius: 8px;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
 
 
-        /* ==========================================
-           MOBILE RESPONSIVENESS
-           ========================================== */
-        @media (max-width: 768px) {
-            body {
-                padding: 15px 10px; 
-            }
-            
-            .top-nav {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
-
-            .top-nav h1 {
-                font-size: 26px; 
-                line-height: 1.2;
-            }
-
-            .welcome-text {
-                text-align: left;
-                font-size: 16px;
-                max-width: 100%;
-            }
-
-            .brand-logo {
-                width: 40px;
-                height: 40px;
-            }
-
-            .metrics-row, .charts-row {
-                grid-template-columns: 1fr; 
-            }
-            
-            .card-value {
-                font-size: 32px;
-            }
-        }
-    </style>
+        /* ==========================================
+           MOBILE RESPONSIVENESS
+           ========================================== */
+        @media (max-width: 768px) {
+            body { padding: 15px 10px; }
+            .top-nav { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .top-nav h1 { font-size: 26px; line-height: 1.2; }
+            .welcome-text { text-align: left; font-size: 16px; max-width: 100%; }
+            .brand-logo { width: 40px; height: 40px; }
+            .metrics-row, .charts-row { grid-template-columns: 1fr; }
+            .card-value { font-size: 32px; }
+        }
+    </style>
 </head>
 <body>
 
-    <div class="dashboard">
-        <!-- Top Navigation -->
-        <div class="top-nav">
-            <div class="brand-container">
-                <img src="dost-logo.png" alt="DOST Logo" class="brand-logo" onerror="this.style.display='none'">
-                <h1>Air Quality & Temperature Monitoring</h1>
-            </div>
-            
-            <div class="welcome-text">
-                Welcome! Breathe Easy and Work Comfortably
-            </div>
-        </div>
-
-        <!-- Top Row: IT Style Metric Cards (Clickable for Info) -->
-        <div class="metrics-row">
-            <div class="metric-card" onclick="openModal('pm25')">
-                <div class="card-header">
-                    <div class="card-icon">🌫️</div>
-                </div>
-                <div class="card-title">PM2.5 DUST</div>
-                <div class="card-subtext">Limit: 35 µg/m³ (DENR)</div>
-                <div class="card-value" id="val-pm25">--</div>
-                <div class="progress-track"><div class="progress-fill" id="bar-pm25"></div></div>
-                <div class="action-text" id="action-pm25">Connecting...</div>
-                
-                <!-- Game Trigger Button (Stops propagation to avoid opening Info modal) -->
-                <button class="play-btn" onclick="openGame('pm25'); event.stopPropagation();">🎮 Play Filter Sim</button>
-            </div>
-
-            <div class="metric-card" onclick="openModal('co2')">
-                <div class="card-header">
-                    <div class="card-icon">💨</div>
-                </div>
-                <div class="card-title">TRUE CO2</div>
-                <div class="card-subtext">Limit: 1000 ppm (ASHRAE)</div>
-                <div class="card-value" id="val-co2">--</div>
-                <div class="progress-track"><div class="progress-fill" id="bar-co2"></div></div>
-                <div class="action-text" id="action-co2">Connecting...</div>
-                
-                <button class="play-btn" onclick="openGame('co2'); event.stopPropagation();">🎮 Play Ventilation Sim</button>
-            </div>
-
-            <div class="metric-card" onclick="openModal('voc')">
-                <div class="card-header">
-                    <div class="card-icon">☣️</div>
-                </div>
-                <div class="card-title">VOC LEVELS</div>
-                <div class="card-subtext">Limit: 400 Analog</div>
-                <div class="card-value" id="val-voc">--</div>
-                <div class="progress-track"><div class="progress-fill" id="bar-voc"></div></div>
-                <div class="action-text" id="action-voc">Connecting...</div>
-
-                <button class="play-btn" onclick="openGame('voc'); event.stopPropagation();">🎮 Play Hazmat Dodge</button>
-            </div>
-
-            <div class="metric-card" onclick="openModal('temp')">
-                <div class="card-header">
-                    <div class="card-icon">🌡️</div>
-                </div>
-                <div class="card-title">TEMPERATURE</div>
-                <div class="card-subtext">Optimal: 18-30 °C</div>
-                <div class="card-value" id="val-temp">--</div>
-                <div class="progress-track"><div class="progress-fill" id="bar-temp"></div></div>
-                <div class="action-text" id="action-temp">Connecting...</div>
-
-                <button class="play-btn" onclick="openGame('temp'); event.stopPropagation();">🎮 Play Thermal Balancer</button>
-            </div>
-
-            <div class="metric-card" onclick="openModal('hum')">
-                <div class="card-header">
-                    <div class="card-icon">💧</div>
-                </div>
-                <div class="card-title">HUMIDITY</div>
-                <div class="card-subtext">Optimal: 40-65 %</div>
-                <div class="card-value" id="val-hum">--</div>
-                <div class="progress-track"><div class="progress-fill" id="bar-hum"></div></div>
-                <div class="action-text" id="action-hum">Connecting...</div>
-
-                <button class="play-btn" onclick="openGame('hum'); event.stopPropagation();">🎮 Play Moisture Control</button>
-            </div>
-        </div>
-
-        <!-- Bottom Row: Charts -->
-        <div class="charts-row">
-            <div class="chart-panel" id="panel-health">
-                <div class="chart-header-wrap">
-                    <div class="chart-title">System Health & Status</div>
-                    <button class="expand-btn" onclick="openChartModal('health')" title="Expand Chart">⛶</button>
-                </div>
-                <div id="donut-chart" class="donut-container"></div>
-                <div id="health-info-text" class="health-info">Awaiting sensor data to analyze system health...</div>
-            </div>
-            
-            <div class="chart-panel" id="panel-trends">
-                <div class="chart-header-wrap">
-                    <div class="chart-title">Environmental Trends (Last 20 Readings)</div>
-                    <button class="expand-btn" onclick="openChartModal('trends')" title="Expand Chart">⛶</button>
-                </div>
-                <div id="line-chart" class="line-container"></div>
-            </div>
-        </div>
-
-        <div class="footer-info" id="last-update">Establishing secure connection to cloud...</div>
-    </div>
-
-    <!-- Info Modal Overlay (For Scientific Info) -->
-    <div class="modal-overlay" id="infoModal" onclick="closeModal(event)">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <button class="modal-close" onclick="closeModal(true)">&times;</button>
-            <h2 class="modal-header" id="modalTitle">Sensor Name</h2>
-            <div class="modal-body" id="modalBody">
-                Health and scientific impact information will appear here.
-            </div>
-            <div class="modal-source" id="modalSource">
-                <strong>Source:</strong> Regulatory citation will appear here.
-            </div>
-        </div>
-    </div>
-
-    <!-- Chart Modal Overlay -->
-    <div class="modal-overlay" id="chartModal" onclick="closeChartModal(event)">
-        <div class="modal-content chart-modal-content" onclick="event.stopPropagation()">
-            <button class="modal-close" onclick="closeChartModal(true)">&times;</button>
-            <h2 class="modal-header" id="chartModalTitle">Chart Title</h2>
-            <div id="modal-chart-canvas" style="width: 100%; height: 50vh; min-height: 300px;"></div>
-            <div id="modal-health-info" class="health-info" style="display: none;"></div>
-        </div>
-    </div>
-
-    <!-- Game Modal Overlay (For Mini-Games) -->
-    <div class="modal-overlay" id="gameModal" onclick="closeGame(event)">
-        <div class="modal-content" style="max-width: 450px;" onclick="event.stopPropagation()">
-            <button class="modal-close" onclick="closeGame(true)">&times;</button>
-            
-            <h2 class="modal-header" id="gameTitle" style="justify-content: center; margin-bottom: 5px;">Game Title</h2>
-            <div class="game-stats">
-                Score: <span id="scoreDisplay" style="color: var(--dost-blue);">0</span> | 
-                Lives: <span id="livesDisplay" style="color: var(--status-danger);">3</span>
-            </div>
-
-            <div class="canvas-wrapper">
-                <canvas id="gameCanvas" width="350" height="450"></canvas>
-                
-                <!-- Start Screen Overlay -->
-                <div id="startScreen" class="canvas-overlay">
-                    <h3 id="startTitle" style="font-family:'Nunito'; color:var(--dost-blue); font-size:24px; margin-top:0;">Ready?</h3>
-                    <p id="startInstructions" style="font-weight:600; color:var(--text-main); font-size:15px; margin-bottom:25px;">Instructions here.</p>
-                    <button class="play-btn" style="background:var(--dost-blue); color:white; width:auto; padding: 12px 30px;" onclick="startGame()">Start Game</button>
-                </div>
-
-                <!-- Game Over Screen Overlay -->
-                <div id="gameOverScreen" class="canvas-overlay" style="display:none;">
-                    <h3 style="font-family:'Nunito'; color:var(--status-danger); font-size:28px; margin-top:0;">GAME OVER</h3>
-                    <p style="font-weight:700; color:var(--text-main); font-size:18px;">Final Score: <br><span id="finalScore" style="color:var(--dost-blue); font-size:32px;">0</span></p>
-                    <button class="play-btn" style="background:var(--dost-blue); color:white; width:auto; padding: 12px 30px; margin-top: 15px;" onclick="startGame()">Play Again</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // ==========================================
-        // SYSTEM CONFIGURATION
-        // ==========================================
-        const channelID = '3415500'; 
-        
-        const limits = {
-            pm25: { max: 50, caution: 25, danger: 35 },
-            co2:  { max: 2000, caution: 800, danger: 1000 },
-            voc:  { max: 500, caution: 300, danger: 400 },
-            temp: { max: 50, caution: 30, danger: 32, min: 18 },
-            hum:  { max: 100, caution: 65, danger: 70, min: 40 }
-        };
-
-        // Modal Content Dictionary
-        const sensorInfo = {
-            pm25: {
-                title: "🌫️ Particulate Matter (PM2.5)",
-                body: "Fine inhalable particles with diameters that are generally 2.5 micrometers and smaller. These microscopic particles can bypass the nose and throat, penetrating deep into the lungs and even entering the bloodstream. Long-term exposure is heavily linked to severe cardiovascular diseases, asthma, and reduced lung function.",
-                source: "<strong>Philippine Clean Air Act (RA 8749) / DENR DAO 2020-14:</strong> Officially classifies PM2.5 levels exceeding 35 µg/m³ as dangerous for sensitive groups.<br><br><strong>WHO 2021 Air Quality Guidelines:</strong> Recommends a much stricter 24-hour safe exposure limit of 15 µg/m³."
-            },
-            co2: {
-                title: "💨 Carbon Dioxide (CO2)",
-                body: "A colorless gas indicating indoor ventilation quality. Elevated indoor CO2 levels directly correlate with decreased cognitive function, lethargy, poor decision-making, and an increased risk of airborne viral transmission due to stagnant air.",
-                source: "<strong>ASHRAE Standard 62.1 (Ventilation for Acceptable IAQ):</strong> Recommends keeping indoor CO2 levels below 1000 ppm to maintain optimal cognitive performance and ensure adequate fresh air exchange in commercial and educational environments."
-            },
-            voc: {
-                title: "☣️ Volatile Organic Compounds (VOC)",
-                body: "Harmful gases emitted from certain solids or liquids (such as paints, cleaning supplies, office equipment, and building materials). High concentrations lead to 'Sick Building Syndrome', resulting in immediate headaches, nausea, eye irritation, and long-term respiratory sensitivity.",
-                source: "<strong>WHO Guidelines for Indoor Air Quality & US EPA:</strong> Acceptable ambient levels for indoor occupational spaces are generally recommended to remain below 300-400 ppb to prevent acute physiological reactions."
-            },
-            temp: {
-                title: "🌡️ Ambient Temperature",
-                body: "Crucial for maintaining occupational health, preventing thermal stress on human occupants, and ensuring active IT equipment (servers, routers, microcontrollers) do not experience thermal throttling or hardware failure.",
-                source: "<strong>ASHRAE Standard 55 (Thermal Environmental Conditions):</strong> Optimal indoor operating ranges for human comfort and productivity fall between 22°C and 27°C, depending on the relative humidity and clothing insulation."
-            },
-            hum: {
-                title: "💧 Relative Humidity",
-                body: "The amount of moisture in the air. High humidity (above 65%) promotes dangerous mold growth, structural damage, and exacerbates respiratory issues. Abnormally low humidity (below 30%) causes skin and eye irritation and exponentially increases the risk of Electrostatic Discharge (ESD) damage to sensitive electronics.",
-                source: "<strong>ASHRAE Standard 55 & EPA:</strong> Recommended indoor relative humidity should be maintained between 40% and 60% for maximum biological comfort and structural safety."
-            }
-        };
-
-        // Info Modal Logic
-        function openModal(sensorType) {
-            const data = sensorInfo[sensorType];
-            if(data) {
-                document.getElementById('modalTitle').innerHTML = data.title;
-                document.getElementById('modalBody').innerHTML = data.body;
-                document.getElementById('modalSource').innerHTML = data.source;
-                document.getElementById('infoModal').classList.add('show');
-            }
-        }
-
-        function closeModal(force = false) {
-            document.getElementById('infoModal').classList.remove('show');
-        }
-
-        // ==========================================
-        // CHART CONFIGURATIONS
-        // ==========================================
-        const donutChart = echarts.init(document.getElementById('donut-chart'));
-        const lineChart = echarts.init(document.getElementById('line-chart'));
-        
-        // Setup the invisible chart inside the modal
-        const modalChart = echarts.init(document.getElementById('modal-chart-canvas'));
-        let currentOpenChart = null;
-
-        const donutOption = {
-            series: [{
-                type: 'gauge',
-                startAngle: 90,
-                endAngle: -270,
-                pointer: { show: false },
-                progress: { show: true, overlap: false, roundCap: true, clip: false, itemStyle: { color: '#4caf50' } },
-                axisLine: { lineStyle: { width: 15, color: [[1, '#333']] } },
-                splitLine: { show: false },
-                axisTick: { show: false },
-                axisLabel: { show: false },
-                data: [{ value: 0, name: 'WAITING', title: { offsetCenter: ['0%', '20%'], color: '#888', fontSize: 14, fontFamily: 'Inter' } }],
-                detail: { width: 50, height: 14, fontSize: 32, fontWeight: 700, fontFamily: 'Inter', color: '#e0e0e0', formatter: '{value}%', offsetCenter: ['0%', '-10%'] }
-            }]
-        };
-        donutChart.setOption(donutOption);
-
-        const lineOption = {
-            tooltip: { trigger: 'axis' },
-            legend: { data: ['PM2.5', 'CO2 (Scaled x0.1)'], textStyle: { color: '#888', fontFamily: 'Inter' }, bottom: 0 },
-            grid: { left: '3%', right: '4%', bottom: '15%', top: '5%', containLabel: true },
-            xAxis: { type: 'category', boundaryGap: false, data: [], axisLabel: { color: '#888', fontFamily: 'Inter' } },
-            yAxis: { type: 'value', splitLine: { lineStyle: { color: '#333' } }, axisLabel: { color: '#888', fontFamily: 'Inter' } },
-            series: [
-                { name: 'PM2.5', type: 'line', smooth: true, itemStyle: { color: '#2196f3' }, data: [] },
-                { name: 'CO2 (Scaled x0.1)', type: 'line', smooth: true, itemStyle: { color: '#ff9800' }, data: [] }
-            ]
-        };
-        lineChart.setOption(lineOption);
-
-        // ==========================================
-        // DATA FETCHING & UI UPDATE LOGIC
-        // ==========================================
-        async function fetchHistoricalData() {
-            const url = `https://api.thingspeak.com/channels/${channelID}/feeds.json?results=20`;
-            
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-                const feeds = data.feeds;
-
-                if (feeds.length === 0) return;
-
-                const times = [];
-                const pm25Data = [];
-                const co2Data = [];
-
-                feeds.forEach(feed => {
-                    const date = new Date(feed.created_at);
-                    times.push(date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
-                    pm25Data.push(feed.field2 || 0);
-                    co2Data.push((feed.field1 || 0) / 10); 
-                });
-
-                lineChart.setOption({ xAxis: { data: times }, series: [{ data: pm25Data }, { data: co2Data }] });
-
-                const latest = feeds[feeds.length - 1];
-                let highestThreat = 0; 
-
-                highestThreat = Math.max(highestThreat, updateProgressBar('pm25', latest.field2, limits.pm25));
-                highestThreat = Math.max(highestThreat, updateProgressBar('co2', latest.field1, limits.co2));
-                highestThreat = Math.max(highestThreat, updateProgressBar('voc', latest.field3, limits.voc));
-                highestThreat = Math.max(highestThreat, updateProgressBar('temp', latest.field4, limits.temp, true));
-                highestThreat = Math.max(highestThreat, updateProgressBar('hum', latest.field5, limits.hum, true));
-
-                updateDonutChart(highestThreat);
-
-                // If the user currently has the trend modal open, sync its data too
-                if (currentOpenChart === 'trends') {
-                    modalChart.setOption(lineChart.getOption(), true);
-                }
-
-                const lastDate = new Date(latest.created_at);
-                document.getElementById('last-update').innerText = "Last Synchronized: " + lastDate.toLocaleString() + " | Status: ONLINE";
-
-            } catch (error) {
-                console.error("Cloud Error: ", error);
-                document.getElementById('last-update').innerText = "SYSTEM OFFLINE: Night Shift Deep Sleep Active or Network Error.";
-            }
-        }
-
-        function updateProgressBar(sensor, valStr, limitObj, isMinMax = false) {
-            const valEl = document.getElementById('val-' + sensor);
-            const barEl = document.getElementById('bar-' + sensor);
-            const actionEl = document.getElementById('action-' + sensor);
-            
-            if (!valStr) {
-                actionEl.innerText = "Please check ESP32 / sensor wiring.";
-                actionEl.style.color = "var(--status-warn)";
-                return 0;
-            }
-            
-            const val = parseFloat(valStr).toFixed(1);
-            valEl.innerText = val;
-
-            let percent = (val / limitObj.max) * 100;
-            if (percent > 100) percent = 100;
-            barEl.style.width = percent + '%';
-
-            let isDanger = isMinMax ? (val < limitObj.min || val > limitObj.danger) : (val > limitObj.danger);
-
-            if (isDanger) {
-                barEl.style.backgroundColor = 'var(--status-danger)';
-                valEl.style.color = 'var(--status-danger)';
-                actionEl.innerText = "CRITICAL: Please ventilate & check area!";
-                actionEl.style.color = 'var(--status-danger)';
-                return 2;
-            } else if (val > limitObj.caution) {
-                barEl.style.backgroundColor = 'var(--status-warn)';
-                valEl.style.color = 'var(--status-warn)';
-                actionEl.innerText = "WARNING: Please monitor levels closely.";
-                actionEl.style.color = 'var(--status-warn)';
-                return 1;
-            } else {
-                barEl.style.backgroundColor = 'var(--status-safe)';
-                valEl.style.color = 'var(--dost-blue)';
-                actionEl.innerText = "System Normal. No action required.";
-                actionEl.style.color = 'var(--text-muted)';
-                return 0;
-            }
-        }
-
-        function updateDonutChart(threat) {
-            let color = '#4caf50'; 
-            let label = 'SAFE';
-            let score = 100;
-            let infoText = "All environmental parameters are currently within safe regulatory limits. No hazards detected.";
-            let infoBg = "rgba(76, 175, 80, 0.1)"; // Safe green background tint
-            let infoColor = "#4caf50";
-
-            if (threat === 2) { 
-                color = '#f44336'; 
-                label = 'DANGER'; 
-                score = 15; 
-                infoText = "CRITICAL: Hazardous environmental conditions detected! Immediate ventilation or evacuation recommended.";
-                infoBg = "rgba(244, 67, 54, 0.1)"; // Danger red background tint
-                infoColor = "#f44336";
-            }
-            else if (threat === 1) { 
-                color = '#ff9800'; 
-                label = 'WARN'; 
-                score = 65; 
-                infoText = "CAUTION: One or more parameters have exceeded optimal levels. Monitor the area closely for potential hazards.";
-                infoBg = "rgba(255, 152, 0, 0.1)"; // Warn orange background tint
-                infoColor = "#ff9800";
-            }
-
-            // Update Donut Chart
-            donutChart.setOption({
-                series: [{
-                    data: [{ value: score, name: label, title: { color: '#888', fontFamily: 'Inter' } }],
-                    progress: { itemStyle: { color: color } }
-                }]
-            });
-
-            // Update Dynamic Info Box below it
-            const healthInfoEl = document.getElementById('health-info-text');
-            healthInfoEl.innerText = infoText;
-            healthInfoEl.style.backgroundColor = infoBg;
-            healthInfoEl.style.color = infoColor;
-            healthInfoEl.style.border = `1px solid ${infoColor}`;
-            
-            // Sync modal if open
-            if (currentOpenChart === 'health') {
-                modalChart.setOption(donutChart.getOption(), true);
-                const modalInfo = document.getElementById('modal-health-info');
-                modalInfo.innerText = infoText;
-                modalInfo.style.backgroundColor = infoBg;
-                modalInfo.style.color = infoColor;
-                modalInfo.style.border = `1px solid ${infoColor}`;
-            }
-        }
-
-        // Chart Modal Logic
-        function openChartModal(chartType) {
-            currentOpenChart = chartType;
-            const modal = document.getElementById('chartModal');
-            const title = document.getElementById('chartModalTitle');
-            const infoBox = document.getElementById('modal-health-info');
-
-            modal.classList.add('show');
-            modalChart.clear();
-
-            if (chartType === 'health') {
-                title.innerText = "System Health & Status";
-                modalChart.setOption(donutChart.getOption(), true); 
-                
-                const sourceInfo = document.getElementById('health-info-text');
-                infoBox.innerText = sourceInfo.innerText;
-                infoBox.style.backgroundColor = sourceInfo.style.backgroundColor;
-                infoBox.style.color = sourceInfo.style.color;
-                infoBox.style.border = sourceInfo.style.border;
-                infoBox.style.display = "block";
-            } else if (chartType === 'trends') {
-                title.innerText = "Environmental Trends (Last 20 Readings)";
-                modalChart.setOption(lineChart.getOption(), true); 
-                infoBox.style.display = "none";
-            }
-
-            setTimeout(() => { modalChart.resize(); }, 50);
-        }
-
-        function closeChartModal(event) {
-            document.getElementById('chartModal').classList.remove('show');
-            currentOpenChart = null;
-        }
-
-        // Resize handler for all charts
-        window.addEventListener('resize', function() {
-            donutChart.resize();
-            lineChart.resize();
-            modalChart.resize();
-        });
-
-        // Initialize Fetch Loop
-        fetchHistoricalData();
-        setInterval(fetchHistoricalData, 15000);
-
-
-        // ==========================================
-        // MINI-GAME ENGINE LOGIC
-        // ==========================================
-        
-        // Game Configuration Dictionary
-        const GAME_CONFIGS = {
-            'pm25': {
-                title: 'Dust Scrubber',
-                instructions: 'Catch the Dust (🌫️) to filter it.<br>Avoid dropping dust!',
-                goodEmoji: '🌫️', 
-                badEmoji: '❌', 
-                missGoodPenalty: true, // Missing good costs a life
-                speed: 3
-            },
-            'co2': {
-                title: 'O2 Balancer',
-                instructions: 'Catch Fresh Air (🍃).<br>Avoid Toxic CO2 (💨)!',
-                goodEmoji: '🍃',
-                badEmoji: '💨',
-                missGoodPenalty: false, 
-                speed: 3.5
-            },
-            'voc': {
-                title: 'Hazmat Dodge',
-                instructions: 'Catch Clean Filters (🛡️).<br>DODGE the Biohazards (☣️)!',
-                goodEmoji: '🛡️',
-                badEmoji: '☣️',
-                missGoodPenalty: false,
-                speed: 4
-            },
-            'temp': {
-                title: 'Thermal Cooler',
-                instructions: 'Catch the Ice (❄️) to cool down.<br>Avoid the Fire (🔥)!',
-                goodEmoji: '❄️',
-                badEmoji: '🔥',
-                missGoodPenalty: false,
-                speed: 4.5
-            },
-            'hum': {
-                title: 'Moisture Control',
-                instructions: 'Catch Water Drops (💧).<br>Avoid Mold Spores (🦠)!',
-                goodEmoji: '💧',
-                badEmoji: '🦠',
-                missGoodPenalty: false,
-                speed: 3.5
-            }
-        };
-
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        let animationId = null;
-        let currentMode = null;
-        let isPlaying = false;
-        
-        let score = 0;
-        let lives = 3;
-        let entities = [];
-        let frameCount = 0;
-
-        const player = {
-            x: canvas.width / 2 - 30,
-            y: canvas.height - 40,
-            width: 60,
-            height: 15,
-            color: '#2196f3' // Match DOST blue in dark theme
-        };
-
-        // Input Controls
-        canvas.addEventListener('mousemove', (e) => {
-            if(!isPlaying) return;
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width;
-            const mouseX = (e.clientX - rect.left) * scaleX;
-            player.x = mouseX - player.width / 2;
-            if (player.x < 0) player.x = 0;
-            if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
-        });
-
-        canvas.addEventListener('touchmove', (e) => {
-            if(!isPlaying) return;
-            e.preventDefault(); 
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width;
-            const touchX = (e.touches[0].clientX - rect.left) * scaleX;
-            player.x = touchX - player.width / 2;
-            if (player.x < 0) player.x = 0;
-            if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
-        }, { passive: false });
-
-        function openGame(mode) {
-            currentMode = GAME_CONFIGS[mode];
-            document.getElementById('gameTitle').innerText = currentMode.title;
-            document.getElementById('startTitle').innerText = currentMode.title;
-            document.getElementById('startInstructions').innerHTML = currentMode.instructions;
-            
-            document.getElementById('gameModal').classList.add('show');
-            document.getElementById('startScreen').style.display = 'flex';
-            document.getElementById('gameOverScreen').style.display = 'none';
-            
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawPlayer();
-        }
-
-        function closeGame(force = false) {
-            document.getElementById('gameModal').classList.remove('show');
-            isPlaying = false;
-            cancelAnimationFrame(animationId);
-        }
-
-        function startGame() {
-            document.getElementById('startScreen').style.display = 'none';
-            document.getElementById('gameOverScreen').style.display = 'none';
-            
-            score = 0;
-            lives = 3;
-            entities = [];
-            frameCount = 0;
-            player.x = canvas.width / 2 - player.width / 2;
-            
-            updateHUD();
-            isPlaying = true;
-            gameLoop();
-        }
-
-        function updateHUD() {
-            document.getElementById('scoreDisplay').innerText = score;
-            document.getElementById('livesDisplay').innerText = lives;
-        }
-
-        function gameOver() {
-            isPlaying = false;
-            cancelAnimationFrame(animationId);
-            document.getElementById('gameOverScreen').style.display = 'flex';
-            document.getElementById('finalScore').innerText = score;
-        }
-
-        function spawnEntity() {
-            const spawnRate = Math.max(30, 60 - Math.floor(score / 5)); 
-            if (frameCount % spawnRate === 0) {
-                const isGood = currentMode.title === 'Dust Scrubber' ? true : Math.random() > 0.3;
-                entities.push({
-                    x: Math.random() * (canvas.width - 24) + 12,
-                    y: -20,
-                    type: isGood ? 'good' : 'bad',
-                    emoji: isGood ? currentMode.goodEmoji : currentMode.badEmoji,
-                    speed: currentMode.speed + Math.random() * 2 + (score * 0.05),
-                    size: 24 
-                });
-            }
-        }
-
-        function drawPlayer() {
-            ctx.fillStyle = player.color;
-            ctx.beginPath();
-            ctx.roundRect(player.x, player.y, player.width, player.height, 8);
-            ctx.fill();
-
-            let grad = ctx.createLinearGradient(0, player.y - 20, 0, player.y);
-            grad.addColorStop(0, 'rgba(0, 198, 255, 0)');
-            grad.addColorStop(1, 'rgba(0, 198, 255, 0.4)');
-            ctx.fillStyle = grad;
-            ctx.fillRect(player.x, player.y - 20, player.width, 20);
-        }
-
-        function gameLoop() {
-            if (!isPlaying) return;
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            frameCount++;
-
-            drawPlayer();
-            spawnEntity();
-
-            for (let i = entities.length - 1; i >= 0; i--) {
-                let ent = entities[i];
-                ent.y += ent.speed;
-
-                ctx.font = `${ent.size}px Arial`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText(ent.emoji, ent.x, ent.y);
-
-                const hitX = ent.x > player.x - 10 && ent.x < player.x + player.width + 10;
-                const hitY = ent.y + ent.size/2 > player.y && ent.y < player.y + player.height;
-
-                if (hitX && hitY) {
-                    if (ent.type === 'good') {
-                        score += 10;
-                    } else {
-                        lives -= 1; 
-                        drawHitFlash();
-                    }
-                    entities.splice(i, 1);
-                    updateHUD();
-                } else if (ent.y > canvas.height + 20) {
-                    if (ent.type === 'good' && currentMode.missGoodPenalty) {
-                        lives -= 1; 
-                        drawHitFlash();
-                    }
-                    entities.splice(i, 1);
-                    updateHUD();
-                }
-            }
-
-            if (lives <= 0) {
-                gameOver();
-            } else {
-                animationId = requestAnimationFrame(gameLoop);
-            }
-        }
-
-        function drawHitFlash() {
-            ctx.fillStyle = 'rgba(220, 53, 69, 0.3)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-        }
-    </script>
-</body>
-</html><!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Air Quality & Temperature Monitoring System</title>
-    
-    <!-- Google Fonts: Inter (Data) & Nunito (Bubble/Rounded for Headers) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
-
-    <!-- Apache ECharts for the Line and Donut Graphs -->
-    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
-
-    <style>
-        :root {
-            /* Enterprise Dark Mode Palette */
-            --bg-base: #121212;
-            --panel-bg: #1e1e1e;
-            --border-color: #2d2d2d;
-            --text-main: #e0e0e0;
-            --text-muted: #888888;
-            --dost-blue: #2196f3;
-            --dost-cyan: #00ffff;
-            
-            /* Status Colors */
-            --status-safe: #4caf50;
-            --status-warn: #ff9800;
-            --status-danger: #f44336;
-        }
-
-        body {
-            /* Modern, Clean Dashboard Font */
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-base);
-            color: var(--text-main);
-            margin: 0;
-            padding: 20px;
-            overflow-x: hidden;
-        }
-
-        /* Top Navigation / Header */
-        .top-nav {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 15px;
-            margin-bottom: 25px;
-        }
-
-        /* Container to group the logo and title together */
-        .brand-container {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .brand-logo {
-            width: 50px;
-            height: 50px;
-            object-fit: contain;
-            border-radius: 50%;
-            background-color: white; 
-            padding: 3px;
-            box-shadow: 0 0 12px rgba(0, 198, 255, 0.4);
-        }
-
-        .top-nav h1 {
-            margin: 0;
-            font-size: 38px; 
-            font-family: 'Nunito', sans-serif; /* Rounded, bubble-like font */
-            font-weight: 900; 
-            /* Premium Deep Blue to Cyan Gradient */
-            background: linear-gradient(135deg, #0072ff 0%, #00c6ff 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            filter: drop-shadow(0px 2px 4px rgba(0, 114, 255, 0.2));
-        }
-
-        /* Replaced Sub-tabs with a radiant Welcome Text */
-        .welcome-text {
-            font-family: 'Nunito', sans-serif;
-            font-size: 20px; 
-            font-weight: 700;
-            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-align: right;
-            max-width: 400px;
-            line-height: 1.3;
-        }
-
-        /* Main Grid Layout */
-        .dashboard {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        /* Top Row: Metric Cards */
-        .metrics-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-
-        .metric-card {
-            background-color: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px; 
-            padding: 18px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-            cursor: pointer; 
-            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-        }
-
-        .metric-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(0, 242, 254, 0.15);
-            border-color: rgba(0, 242, 254, 0.4);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
-
-        .card-icon {
-            background-color: rgba(33, 150, 243, 0.1);
-            color: var(--dost-blue);
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 20px;
-        }
-
-        .card-title {
-            font-size: 16px; 
-            font-weight: 700; 
-            margin-top: 12px;
-            letter-spacing: 0.5px;
-        }
-
-        .card-subtext {
-            font-size: 12px;
-            font-weight: 400;
-            color: var(--text-muted);
-            margin-top: 4px;
-        }
-
-        .card-value {
-            font-size: 36px; 
-            font-weight: 800; 
-            color: var(--dost-blue);
-            margin: 15px 0 12px 0;
-            letter-spacing: -1px; 
-        }
-
-        .progress-track {
-            width: 100%;
-            height: 8px; 
-            background-color: #333;
-            border-radius: 4px;
-            overflow: hidden;
-            margin-bottom: 12px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            width: 0%;
-            background-color: var(--status-safe);
-            transition: width 0.5s ease, background-color 0.5s ease;
-        }
-
-        .action-text {
-            font-size: 12px; 
-            font-weight: 600;
-            margin-top: 5px;
-            margin-bottom: 12px;
-            color: var(--text-muted);
-        }
-
-        /* NEW: Game Button inside the card */
-        .play-btn {
-            width: 100%;
-            padding: 10px;
-            background: rgba(33, 150, 243, 0.1);
-            color: var(--dost-blue);
-            border: 1px solid rgba(33, 150, 243, 0.3);
-            border-radius: 6px;
-            font-family: 'Inter', sans-serif;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .play-btn:hover {
-            background: var(--dost-blue);
-            color: white;
-            box-shadow: 0 0 10px rgba(33, 150, 243, 0.5);
-            border-color: var(--dost-blue);
-        }
-
-        /* Bottom Row: Charts */
-        .charts-row {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 15px;
-        }
-
-        .chart-panel {
-            background-color: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-            display: flex;
-            flex-direction: column;
-            transition: all 0.3s ease;
-        }
-
-        .chart-header-wrap {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .chart-title {
-            font-size: 18px; 
-            font-weight: 700;
-            color: var(--text-main);
-            letter-spacing: 0.5px;
-            margin: 0;
-        }
-
-        /* Expansion Styles */
-        .expand-btn {
-            background: none;
-            border: none;
-            color: var(--dost-blue);
-            cursor: pointer;
-            font-size: 22px;
-            transition: transform 0.2s ease, color 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .expand-btn:hover {
-            color: var(--dost-cyan);
-            transform: scale(1.1);
-        }
-        
-        .chart-modal-content {
-            max-width: 1000px;
-            width: 95%;
-        }
-
-        .donut-container {
-            width: 100%;
-            height: 230px; 
-        }
-
-        .line-container {
-            width: 100%;
-            height: 320px; 
-        }
-
-        /* Dynamic Health Status Information Box */
-        .health-info {
-            margin-top: 15px;
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            text-align: center;
-            background-color: rgba(255, 255, 255, 0.05);
-            color: var(--text-muted);
-            border: 1px solid var(--border-color);
-            transition: all 0.4s ease;
-            line-height: 1.5;
-        }
-
-        /* System Info Footer */
-        .footer-info {
-            text-align: right;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text-muted);
-            margin-top: 10px;
-            padding-bottom: 20px;
-        }
-
-        /* Modal Styles */
-        .modal-overlay {
-            display: none; 
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(5px);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .modal-overlay.show {
-            display: flex;
-            opacity: 1;
-        }
-
-        .modal-content {
-            background-color: var(--panel-bg);
-            border: 1px solid var(--dost-blue);
-            border-radius: 16px;
-            width: 90%;
-            max-width: 600px;
-            padding: 30px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-            position: relative;
-            transform: translateY(20px);
-            transition: transform 0.3s ease;
-        }
-
-        .modal-overlay.show .modal-content {
-            transform: translateY(0);
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            font-size: 24px;
-            cursor: pointer;
-            transition: color 0.2s ease;
-        }
-
-        .modal-close:hover {
-            color: var(--text-main);
-        }
-
-        .modal-header {
-            font-size: 24px;
-            font-weight: 800;
-            color: var(--dost-blue);
-            margin-bottom: 15px;
-            margin-top: 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .modal-body {
-            font-size: 15px;
-            line-height: 1.6;
-            color: var(--text-main);
-            margin-bottom: 20px;
-        }
-
-        .modal-source {
-            font-size: 13px;
-            line-height: 1.5;
-            color: var(--text-muted);
-            background-color: rgba(255, 255, 255, 0.05);
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid var(--status-warn);
-        }
-        
-        .modal-source strong {
-            color: var(--e0e0e0);
-        }
-
-        /* -------------------------------------
-           GAME SPECIFIC STYLES 
-           ------------------------------------- */
-        .game-stats {
-            text-align: center;
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--text-muted);
-            margin-bottom: 15px;
-        }
-
-        .game-stats span {
-            font-size: 18px;
-        }
-
-        .canvas-wrapper {
-            position: relative;
-            width: 100%;
-            max-width: 350px;
-            margin: 0 auto;
-        }
-
-        canvas {
-            background-color: #121212; /* Dark theme background for game */
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            cursor: none; 
-            touch-action: none; 
-            width: 100%; /* Makes it responsive */
-            aspect-ratio: 350 / 450; 
-        }
-
-        .canvas-overlay {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: rgba(30, 30, 30, 0.9);
-            border-radius: 8px;
-            text-align: center;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
-
-        /* ==========================================
-           MOBILE RESPONSIVENESS
-           ========================================== */
-        @media (max-width: 768px) {
-            body {
-                padding: 15px 10px; 
-            }
-            
-            .top-nav {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
-
-            .top-nav h1 {
-                font-size: 26px; 
-                line-height: 1.2;
-            }
-
-            .welcome-text {
-                text-align: left;
-                font-size: 16px;
-                max-width: 100%;
-            }
-
-            .brand-logo {
-                width: 40px;
-                height: 40px;
-            }
-
-            .metrics-row, .charts-row {
-                grid-template-columns: 1fr; 
-            }
-            
-            .card-value {
-                font-size: 32px;
-            }
-        }
-    </style>
-</head>
-<body>
-
-    <div class="dashboard">
-        <!-- Top Navigation -->
-        <div class="top-nav">
-            <div class="brand-container">
-                <img src="dost-logo.png" alt="DOST Logo" class="brand-logo" onerror="this.style.display='none'">
-                <h1>Air Quality & Temperature Monitoring</h1>
-            </div>
-            
-            <div class="welcome-text">
-                Welcome! Breathe Easy and Work Comfortably
-            </div>
-        </div>
-
-        <!-- Top Row: IT Style Metric Cards (Clickable for Info) -->
-        <div class="metrics-row">
-            <div class="metric-card" onclick="openModal('pm25')">
-                <div class="card-header">
-                    <div class="card-icon">🌫️</div>
-                </div>
-                <div class="card-title">PM2.5 DUST</div>
-                <div class="card-subtext">Limit: 35 µg/m³ (DENR)</div>
-                <div class="card-value" id="val-pm25">--</div>
-                <div class="progress-track"><div class="progress-fill" id="bar-pm25"></div></div>
-                <div class="action-text" id="action-pm25">Connecting...</div>
-                
-                <!-- Game Trigger Button (Stops propagation to avoid opening Info modal) -->
-                <button class="play-btn" onclick="openGame('pm25'); event.stopPropagation();">🎮 Play Filter Sim</button>
-            </div>
-
-            <div class="metric-card" onclick="openModal('co2')">
-                <div class="card-header">
-                    <div class="card-icon">💨</div>
-                </div>
-                <div class="card-title">TRUE CO2</div>
-                <div class="card-subtext">Limit: 1000 ppm (ASHRAE)</div>
-                <div class="card-value" id="val-co2">--</div>
-                <div class="progress-track"><div class="progress-fill" id="bar-co2"></div></div>
-                <div class="action-text" id="action-co2">Connecting...</div>
-                
-                <button class="play-btn" onclick="openGame('co2'); event.stopPropagation();">🎮 Play Ventilation Sim</button>
-            </div>
-
-            <div class="metric-card" onclick="openModal('voc')">
-                <div class="card-header">
-                    <div class="card-icon">☣️</div>
-                </div>
-                <div class="card-title">VOC LEVELS</div>
-                <div class="card-subtext">Limit: 400 Analog</div>
-                <div class="card-value" id="val-voc">--</div>
-                <div class="progress-track"><div class="progress-fill" id="bar-voc"></div></div>
-                <div class="action-text" id="action-voc">Connecting...</div>
-
-                <button class="play-btn" onclick="openGame('voc'); event.stopPropagation();">🎮 Play Hazmat Dodge</button>
-            </div>
-
-            <div class="metric-card" onclick="openModal('temp')">
-                <div class="card-header">
-                    <div class="card-icon">🌡️</div>
-                </div>
-                <div class="card-title">TEMPERATURE</div>
-                <div class="card-subtext">Optimal: 18-30 °C</div>
-                <div class="card-value" id="val-temp">--</div>
-                <div class="progress-track"><div class="progress-fill" id="bar-temp"></div></div>
-                <div class="action-text" id="action-temp">Connecting...</div>
-
-                <button class="play-btn" onclick="openGame('temp'); event.stopPropagation();">🎮 Play Thermal Balancer</button>
-            </div>
-
-            <div class="metric-card" onclick="openModal('hum')">
-                <div class="card-header">
-                    <div class="card-icon">💧</div>
-                </div>
-                <div class="card-title">HUMIDITY</div>
-                <div class="card-subtext">Optimal: 40-65 %</div>
-                <div class="card-value" id="val-hum">--</div>
-                <div class="progress-track"><div class="progress-fill" id="bar-hum"></div></div>
-                <div class="action-text" id="action-hum">Connecting...</div>
-
-                <button class="play-btn" onclick="openGame('hum'); event.stopPropagation();">🎮 Play Moisture Control</button>
-            </div>
-        </div>
-
-        <!-- Bottom Row: Charts -->
-        <div class="charts-row">
-            <div class="chart-panel" id="panel-health">
-                <div class="chart-header-wrap">
-                    <div class="chart-title">System Health & Status</div>
-                    <button class="expand-btn" onclick="openChartModal('health')" title="Expand Chart">⛶</button>
-                </div>
-                <div id="donut-chart" class="donut-container"></div>
-                <div id="health-info-text" class="health-info">Awaiting sensor data to analyze system health...</div>
-            </div>
-            
-            <div class="chart-panel" id="panel-trends">
-                <div class="chart-header-wrap">
-                    <div class="chart-title">Environmental Trends (Last 20 Readings)</div>
-                    <button class="expand-btn" onclick="openChartModal('trends')" title="Expand Chart">⛶</button>
-                </div>
-                <div id="line-chart" class="line-container"></div>
-            </div>
-        </div>
-
-        <div class="footer-info" id="last-update">Establishing secure connection to cloud...</div>
-    </div>
-
-    <!-- Info Modal Overlay (For Scientific Info) -->
-    <div class="modal-overlay" id="infoModal" onclick="closeModal(event)">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <button class="modal-close" onclick="closeModal(true)">&times;</button>
-            <h2 class="modal-header" id="modalTitle">Sensor Name</h2>
-            <div class="modal-body" id="modalBody">
-                Health and scientific impact information will appear here.
-            </div>
-            <div class="modal-source" id="modalSource">
-                <strong>Source:</strong> Regulatory citation will appear here.
-            </div>
-        </div>
-    </div>
-
-    <!-- Chart Modal Overlay -->
-    <div class="modal-overlay" id="chartModal" onclick="closeChartModal(event)">
-        <div class="modal-content chart-modal-content" onclick="event.stopPropagation()">
-            <button class="modal-close" onclick="closeChartModal(true)">&times;</button>
-            <h2 class="modal-header" id="chartModalTitle">Chart Title</h2>
-            <div id="modal-chart-canvas" style="width: 100%; height: 50vh; min-height: 300px;"></div>
-            <div id="modal-health-info" class="health-info" style="display: none;"></div>
-        </div>
-    </div>
-
-    <!-- Game Modal Overlay (For Mini-Games) -->
-    <div class="modal-overlay" id="gameModal" onclick="closeGame(event)">
-        <div class="modal-content" style="max-width: 450px;" onclick="event.stopPropagation()">
-            <button class="modal-close" onclick="closeGame(true)">&times;</button>
-            
-            <h2 class="modal-header" id="gameTitle" style="justify-content: center; margin-bottom: 5px;">Game Title</h2>
-            <div class="game-stats">
-                Score: <span id="scoreDisplay" style="color: var(--dost-blue);">0</span> | 
-                Lives: <span id="livesDisplay" style="color: var(--status-danger);">3</span>
-            </div>
-
-            <div class="canvas-wrapper">
-                <canvas id="gameCanvas" width="350" height="450"></canvas>
-                
-                <!-- Start Screen Overlay -->
-                <div id="startScreen" class="canvas-overlay">
-                    <h3 id="startTitle" style="font-family:'Nunito'; color:var(--dost-blue); font-size:24px; margin-top:0;">Ready?</h3>
-                    <p id="startInstructions" style="font-weight:600; color:var(--text-main); font-size:15px; margin-bottom:25px;">Instructions here.</p>
-                    <button class="play-btn" style="background:var(--dost-blue); color:white; width:auto; padding: 12px 30px;" onclick="startGame()">Start Game</button>
-                </div>
-
-                <!-- Game Over Screen Overlay -->
-                <div id="gameOverScreen" class="canvas-overlay" style="display:none;">
-                    <h3 style="font-family:'Nunito'; color:var(--status-danger); font-size:28px; margin-top:0;">GAME OVER</h3>
-                    <p style="font-weight:700; color:var(--text-main); font-size:18px;">Final Score: <br><span id="finalScore" style="color:var(--dost-blue); font-size:32px;">0</span></p>
-                    <button class="play-btn" style="background:var(--dost-blue); color:white; width:auto; padding: 12px 30px; margin-top: 15px;" onclick="startGame()">Play Again</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // ==========================================
-        // SYSTEM CONFIGURATION
-        // ==========================================
-        const channelID = '3415500'; 
-        
-        const limits = {
-            pm25: { max: 50, caution: 25, danger: 35 },
-            co2:  { max: 2000, caution: 800, danger: 1000 },
-            voc:  { max: 500, caution: 300, danger: 400 },
-            temp: { max: 50, caution: 30, danger: 32, min: 18 },
-            hum:  { max: 100, caution: 65, danger: 70, min: 40 }
-        };
-
-        // Modal Content Dictionary
-        const sensorInfo = {
-            pm25: {
-                title: "🌫️ Particulate Matter (PM2.5)",
-                body: "Fine inhalable particles with diameters that are generally 2.5 micrometers and smaller. These microscopic particles can bypass the nose and throat, penetrating deep into the lungs and even entering the bloodstream. Long-term exposure is heavily linked to severe cardiovascular diseases, asthma, and reduced lung function.",
-                source: "<strong>Philippine Clean Air Act (RA 8749) / DENR DAO 2020-14:</strong> Officially classifies PM2.5 levels exceeding 35 µg/m³ as dangerous for sensitive groups.<br><br><strong>WHO 2021 Air Quality Guidelines:</strong> Recommends a much stricter 24-hour safe exposure limit of 15 µg/m³."
-            },
-            co2: {
-                title: "💨 Carbon Dioxide (CO2)",
-                body: "A colorless gas indicating indoor ventilation quality. Elevated indoor CO2 levels directly correlate with decreased cognitive function, lethargy, poor decision-making, and an increased risk of airborne viral transmission due to stagnant air.",
-                source: "<strong>ASHRAE Standard 62.1 (Ventilation for Acceptable IAQ):</strong> Recommends keeping indoor CO2 levels below 1000 ppm to maintain optimal cognitive performance and ensure adequate fresh air exchange in commercial and educational environments."
-            },
-            voc: {
-                title: "☣️ Volatile Organic Compounds (VOC)",
-                body: "Harmful gases emitted from certain solids or liquids (such as paints, cleaning supplies, office equipment, and building materials). High concentrations lead to 'Sick Building Syndrome', resulting in immediate headaches, nausea, eye irritation, and long-term respiratory sensitivity.",
-                source: "<strong>WHO Guidelines for Indoor Air Quality & US EPA:</strong> Acceptable ambient levels for indoor occupational spaces are generally recommended to remain below 300-400 ppb to prevent acute physiological reactions."
-            },
-            temp: {
-                title: "🌡️ Ambient Temperature",
-                body: "Crucial for maintaining occupational health, preventing thermal stress on human occupants, and ensuring active IT equipment (servers, routers, microcontrollers) do not experience thermal throttling or hardware failure.",
-                source: "<strong>ASHRAE Standard 55 (Thermal Environmental Conditions):</strong> Optimal indoor operating ranges for human comfort and productivity fall between 22°C and 27°C, depending on the relative humidity and clothing insulation."
-            },
-            hum: {
-                title: "💧 Relative Humidity",
-                body: "The amount of moisture in the air. High humidity (above 65%) promotes dangerous mold growth, structural damage, and exacerbates respiratory issues. Abnormally low humidity (below 30%) causes skin and eye irritation and exponentially increases the risk of Electrostatic Discharge (ESD) damage to sensitive electronics.",
-                source: "<strong>ASHRAE Standard 55 & EPA:</strong> Recommended indoor relative humidity should be maintained between 40% and 60% for maximum biological comfort and structural safety."
-            }
-        };
-
-        // Info Modal Logic
-        function openModal(sensorType) {
-            const data = sensorInfo[sensorType];
-            if(data) {
-                document.getElementById('modalTitle').innerHTML = data.title;
-                document.getElementById('modalBody').innerHTML = data.body;
-                document.getElementById('modalSource').innerHTML = data.source;
-                document.getElementById('infoModal').classList.add('show');
-            }
-        }
-
-        function closeModal(force = false) {
-            document.getElementById('infoModal').classList.remove('show');
-        }
-
-        // ==========================================
-        // CHART CONFIGURATIONS
-        // ==========================================
-        const donutChart = echarts.init(document.getElementById('donut-chart'));
-        const lineChart = echarts.init(document.getElementById('line-chart'));
-        
-        // Setup the invisible chart inside the modal
-        const modalChart = echarts.init(document.getElementById('modal-chart-canvas'));
-        let currentOpenChart = null;
-
-        const donutOption = {
-            series: [{
-                type: 'gauge',
-                startAngle: 90,
-                endAngle: -270,
-                pointer: { show: false },
-                progress: { show: true, overlap: false, roundCap: true, clip: false, itemStyle: { color: '#4caf50' } },
-                axisLine: { lineStyle: { width: 15, color: [[1, '#333']] } },
-                splitLine: { show: false },
-                axisTick: { show: false },
-                axisLabel: { show: false },
-                data: [{ value: 0, name: 'WAITING', title: { offsetCenter: ['0%', '20%'], color: '#888', fontSize: 14, fontFamily: 'Inter' } }],
-                detail: { width: 50, height: 14, fontSize: 32, fontWeight: 700, fontFamily: 'Inter', color: '#e0e0e0', formatter: '{value}%', offsetCenter: ['0%', '-10%'] }
-            }]
-        };
-        donutChart.setOption(donutOption);
-
-        const lineOption = {
-            tooltip: { trigger: 'axis' },
-            legend: { data: ['PM2.5', 'CO2 (Scaled x0.1)'], textStyle: { color: '#888', fontFamily: 'Inter' }, bottom: 0 },
-            grid: { left: '3%', right: '4%', bottom: '15%', top: '5%', containLabel: true },
-            xAxis: { type: 'category', boundaryGap: false, data: [], axisLabel: { color: '#888', fontFamily: 'Inter' } },
-            yAxis: { type: 'value', splitLine: { lineStyle: { color: '#333' } }, axisLabel: { color: '#888', fontFamily: 'Inter' } },
-            series: [
-                { name: 'PM2.5', type: 'line', smooth: true, itemStyle: { color: '#2196f3' }, data: [] },
-                { name: 'CO2 (Scaled x0.1)', type: 'line', smooth: true, itemStyle: { color: '#ff9800' }, data: [] }
-            ]
-        };
-        lineChart.setOption(lineOption);
-
-        // ==========================================
-        // DATA FETCHING & UI UPDATE LOGIC
-        // ==========================================
-        async function fetchHistoricalData() {
-            const url = `https://api.thingspeak.com/channels/${channelID}/feeds.json?results=20`;
-            
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-                const feeds = data.feeds;
-
-                if (feeds.length === 0) return;
-
-                const times = [];
-                const pm25Data = [];
-                const co2Data = [];
-
-                feeds.forEach(feed => {
-                    const date = new Date(feed.created_at);
-                    times.push(date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
-                    pm25Data.push(feed.field2 || 0);
-                    co2Data.push((feed.field1 || 0) / 10); 
-                });
-
-                lineChart.setOption({ xAxis: { data: times }, series: [{ data: pm25Data }, { data: co2Data }] });
-
-                const latest = feeds[feeds.length - 1];
-                let highestThreat = 0; 
-
-                highestThreat = Math.max(highestThreat, updateProgressBar('pm25', latest.field2, limits.pm25));
-                highestThreat = Math.max(highestThreat, updateProgressBar('co2', latest.field1, limits.co2));
-                highestThreat = Math.max(highestThreat, updateProgressBar('voc', latest.field3, limits.voc));
-                highestThreat = Math.max(highestThreat, updateProgressBar('temp', latest.field4, limits.temp, true));
-                highestThreat = Math.max(highestThreat, updateProgressBar('hum', latest.field5, limits.hum, true));
-
-                updateDonutChart(highestThreat);
-
-                // If the user currently has the trend modal open, sync its data too
-                if (currentOpenChart === 'trends') {
-                    modalChart.setOption(lineChart.getOption(), true);
-                }
-
-                const lastDate = new Date(latest.created_at);
-                document.getElementById('last-update').innerText = "Last Synchronized: " + lastDate.toLocaleString() + " | Status: ONLINE";
-
-            } catch (error) {
-                console.error("Cloud Error: ", error);
-                document.getElementById('last-update').innerText = "SYSTEM OFFLINE: Night Shift Deep Sleep Active or Network Error.";
-            }
-        }
-
-        function updateProgressBar(sensor, valStr, limitObj, isMinMax = false) {
-            const valEl = document.getElementById('val-' + sensor);
-            const barEl = document.getElementById('bar-' + sensor);
-            const actionEl = document.getElementById('action-' + sensor);
-            
-            if (!valStr) {
-                actionEl.innerText = "Please check ESP32 / sensor wiring.";
-                actionEl.style.color = "var(--status-warn)";
-                return 0;
-            }
-            
-            const val = parseFloat(valStr).toFixed(1);
-            valEl.innerText = val;
-
-            let percent = (val / limitObj.max) * 100;
-            if (percent > 100) percent = 100;
-            barEl.style.width = percent + '%';
-
-            let isDanger = isMinMax ? (val < limitObj.min || val > limitObj.danger) : (val > limitObj.danger);
-
-            if (isDanger) {
-                barEl.style.backgroundColor = 'var(--status-danger)';
-                valEl.style.color = 'var(--status-danger)';
-                actionEl.innerText = "CRITICAL: Please ventilate & check area!";
-                actionEl.style.color = 'var(--status-danger)';
-                return 2;
-            } else if (val > limitObj.caution) {
-                barEl.style.backgroundColor = 'var(--status-warn)';
-                valEl.style.color = 'var(--status-warn)';
-                actionEl.innerText = "WARNING: Please monitor levels closely.";
-                actionEl.style.color = 'var(--status-warn)';
-                return 1;
-            } else {
-                barEl.style.backgroundColor = 'var(--status-safe)';
-                valEl.style.color = 'var(--dost-blue)';
-                actionEl.innerText = "System Normal. No action required.";
-                actionEl.style.color = 'var(--text-muted)';
-                return 0;
-            }
-        }
-
-        function updateDonutChart(threat) {
-            let color = '#4caf50'; 
-            let label = 'SAFE';
-            let score = 100;
-            let infoText = "All environmental parameters are currently within safe regulatory limits. No hazards detected.";
-            let infoBg = "rgba(76, 175, 80, 0.1)"; // Safe green background tint
-            let infoColor = "#4caf50";
-
-            if (threat === 2) { 
-                color = '#f44336'; 
-                label = 'DANGER'; 
-                score = 15; 
-                infoText = "CRITICAL: Hazardous environmental conditions detected! Immediate ventilation or evacuation recommended.";
-                infoBg = "rgba(244, 67, 54, 0.1)"; // Danger red background tint
-                infoColor = "#f44336";
-            }
-            else if (threat === 1) { 
-                color = '#ff9800'; 
-                label = 'WARN'; 
-                score = 65; 
-                infoText = "CAUTION: One or more parameters have exceeded optimal levels. Monitor the area closely for potential hazards.";
-                infoBg = "rgba(255, 152, 0, 0.1)"; // Warn orange background tint
-                infoColor = "#ff9800";
-            }
-
-            // Update Donut Chart
-            donutChart.setOption({
-                series: [{
-                    data: [{ value: score, name: label, title: { color: '#888', fontFamily: 'Inter' } }],
-                    progress: { itemStyle: { color: color } }
-                }]
-            });
-
-            // Update Dynamic Info Box below it
-            const healthInfoEl = document.getElementById('health-info-text');
-            healthInfoEl.innerText = infoText;
-            healthInfoEl.style.backgroundColor = infoBg;
-            healthInfoEl.style.color = infoColor;
-            healthInfoEl.style.border = `1px solid ${infoColor}`;
-            
-            // Sync modal if open
-            if (currentOpenChart === 'health') {
-                modalChart.setOption(donutChart.getOption(), true);
-                const modalInfo = document.getElementById('modal-health-info');
-                modalInfo.innerText = infoText;
-                modalInfo.style.backgroundColor = infoBg;
-                modalInfo.style.color = infoColor;
-                modalInfo.style.border = `1px solid ${infoColor}`;
-            }
-        }
-
-        // Chart Modal Logic
-        function openChartModal(chartType) {
-            currentOpenChart = chartType;
-            const modal = document.getElementById('chartModal');
-            const title = document.getElementById('chartModalTitle');
-            const infoBox = document.getElementById('modal-health-info');
-
-            modal.classList.add('show');
-            modalChart.clear();
-
-            if (chartType === 'health') {
-                title.innerText = "System Health & Status";
-                modalChart.setOption(donutChart.getOption(), true); 
-                
-                const sourceInfo = document.getElementById('health-info-text');
-                infoBox.innerText = sourceInfo.innerText;
-                infoBox.style.backgroundColor = sourceInfo.style.backgroundColor;
-                infoBox.style.color = sourceInfo.style.color;
-                infoBox.style.border = sourceInfo.style.border;
-                infoBox.style.display = "block";
-            } else if (chartType === 'trends') {
-                title.innerText = "Environmental Trends (Last 20 Readings)";
-                modalChart.setOption(lineChart.getOption(), true); 
-                infoBox.style.display = "none";
-            }
-
-            setTimeout(() => { modalChart.resize(); }, 50);
-        }
-
-        function closeChartModal(event) {
-            document.getElementById('chartModal').classList.remove('show');
-            currentOpenChart = null;
-        }
-
-        // Resize handler for all charts
-        window.addEventListener('resize', function() {
-            donutChart.resize();
-            lineChart.resize();
-            modalChart.resize();
-        });
-
-        // Initialize Fetch Loop
-        fetchHistoricalData();
-        setInterval(fetchHistoricalData, 15000);
-
-
-        // ==========================================
-        // MINI-GAME ENGINE LOGIC
-        // ==========================================
-        
-        // Game Configuration Dictionary
-        const GAME_CONFIGS = {
-            'pm25': {
-                title: 'Dust Scrubber',
-                instructions: 'Catch the Dust (🌫️) to filter it.<br>Avoid dropping dust!',
-                goodEmoji: '🌫️', 
-                badEmoji: '❌', 
-                missGoodPenalty: true, // Missing good costs a life
-                speed: 3
-            },
-            'co2': {
-                title: 'O2 Balancer',
-                instructions: 'Catch Fresh Air (🍃).<br>Avoid Toxic CO2 (💨)!',
-                goodEmoji: '🍃',
-                badEmoji: '💨',
-                missGoodPenalty: false, 
-                speed: 3.5
-            },
-            'voc': {
-                title: 'Hazmat Dodge',
-                instructions: 'Catch Clean Filters (🛡️).<br>DODGE the Biohazards (☣️)!',
-                goodEmoji: '🛡️',
-                badEmoji: '☣️',
-                missGoodPenalty: false,
-                speed: 4
-            },
-            'temp': {
-                title: 'Thermal Cooler',
-                instructions: 'Catch the Ice (❄️) to cool down.<br>Avoid the Fire (🔥)!',
-                goodEmoji: '❄️',
-                badEmoji: '🔥',
-                missGoodPenalty: false,
-                speed: 4.5
-            },
-            'hum': {
-                title: 'Moisture Control',
-                instructions: 'Catch Water Drops (💧).<br>Avoid Mold Spores (🦠)!',
-                goodEmoji: '💧',
-                badEmoji: '🦠',
-                missGoodPenalty: false,
-                speed: 3.5
-            }
-        };
-
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        let animationId = null;
-        let currentMode = null;
-        let isPlaying = false;
-        
-        let score = 0;
-        let lives = 3;
-        let entities = [];
-        let frameCount = 0;
-
-        const player = {
-            x: canvas.width / 2 - 30,
-            y: canvas.height - 40,
-            width: 60,
-            height: 15,
-            color: '#2196f3' // Match DOST blue in dark theme
-        };
-
-        // Input Controls
-        canvas.addEventListener('mousemove', (e) => {
-            if(!isPlaying) return;
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width;
-            const mouseX = (e.clientX - rect.left) * scaleX;
-            player.x = mouseX - player.width / 2;
-            if (player.x < 0) player.x = 0;
-            if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
-        });
-
-        canvas.addEventListener('touchmove', (e) => {
-            if(!isPlaying) return;
-            e.preventDefault(); 
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width;
-            const touchX = (e.touches[0].clientX - rect.left) * scaleX;
-            player.x = touchX - player.width / 2;
-            if (player.x < 0) player.x = 0;
-            if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
-        }, { passive: false });
-
-        function openGame(mode) {
-            currentMode = GAME_CONFIGS[mode];
-            document.getElementById('gameTitle').innerText = currentMode.title;
-            document.getElementById('startTitle').innerText = currentMode.title;
-            document.getElementById('startInstructions').innerHTML = currentMode.instructions;
-            
-            document.getElementById('gameModal').classList.add('show');
-            document.getElementById('startScreen').style.display = 'flex';
-            document.getElementById('gameOverScreen').style.display = 'none';
-            
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawPlayer();
-        }
-
-        function closeGame(force = false) {
-            document.getElementById('gameModal').classList.remove('show');
-            isPlaying = false;
-            cancelAnimationFrame(animationId);
-        }
-
-        function startGame() {
-            document.getElementById('startScreen').style.display = 'none';
-            document.getElementById('gameOverScreen').style.display = 'none';
-            
-            score = 0;
-            lives = 3;
-            entities = [];
-            frameCount = 0;
-            player.x = canvas.width / 2 - player.width / 2;
-            
-            updateHUD();
-            isPlaying = true;
-            gameLoop();
-        }
-
-        function updateHUD() {
-            document.getElementById('scoreDisplay').innerText = score;
-            document.getElementById('livesDisplay').innerText = lives;
-        }
-
-        function gameOver() {
-            isPlaying = false;
-            cancelAnimationFrame(animationId);
-            document.getElementById('gameOverScreen').style.display = 'flex';
-            document.getElementById('finalScore').innerText = score;
-        }
-
-        function spawnEntity() {
-            const spawnRate = Math.max(30, 60 - Math.floor(score / 5)); 
-            if (frameCount % spawnRate === 0) {
-                const isGood = currentMode.title === 'Dust Scrubber' ? true : Math.random() > 0.3;
-                entities.push({
-                    x: Math.random() * (canvas.width - 24) + 12,
-                    y: -20,
-                    type: isGood ? 'good' : 'bad',
-                    emoji: isGood ? currentMode.goodEmoji : currentMode.badEmoji,
-                    speed: currentMode.speed + Math.random() * 2 + (score * 0.05),
-                    size: 24 
-                });
-            }
-        }
-
-        function drawPlayer() {
-            ctx.fillStyle = player.color;
-            ctx.beginPath();
-            ctx.roundRect(player.x, player.y, player.width, player.height, 8);
-            ctx.fill();
-
-            let grad = ctx.createLinearGradient(0, player.y - 20, 0, player.y);
-            grad.addColorStop(0, 'rgba(0, 198, 255, 0)');
-            grad.addColorStop(1, 'rgba(0, 198, 255, 0.4)');
-            ctx.fillStyle = grad;
-            ctx.fillRect(player.x, player.y - 20, player.width, 20);
-        }
-
-        function gameLoop() {
-            if (!isPlaying) return;
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            frameCount++;
-
-            drawPlayer();
-            spawnEntity();
-
-            for (let i = entities.length - 1; i >= 0; i--) {
-                let ent = entities[i];
-                ent.y += ent.speed;
-
-                ctx.font = `${ent.size}px Arial`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText(ent.emoji, ent.x, ent.y);
-
-                const hitX = ent.x > player.x - 10 && ent.x < player.x + player.width + 10;
-                const hitY = ent.y + ent.size/2 > player.y && ent.y < player.y + player.height;
-
-                if (hitX && hitY) {
-                    if (ent.type === 'good') {
-                        score += 10;
-                    } else {
-                        lives -= 1; 
-                        drawHitFlash();
-                    }
-                    entities.splice(i, 1);
-                    updateHUD();
-                } else if (ent.y > canvas.height + 20) {
-                    if (ent.type === 'good' && currentMode.missGoodPenalty) {
-                        lives -= 1; 
-                        drawHitFlash();
-                    }
-                    entities.splice(i, 1);
-                    updateHUD();
-                }
-            }
-
-            if (lives <= 0) {
-                gameOver();
-            } else {
-                animationId = requestAnimationFrame(gameLoop);
-            }
-        }
-
-        function drawHitFlash() {
-            ctx.fillStyle = 'rgba(220, 53, 69, 0.3)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-        }
-    </script>
+    <div class="dashboard">
+        <!-- Top Navigation -->
+        <div class="top-nav">
+            <div class="brand-container">
+                <!-- Direct Wikimedia raw file link -->
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Department_of_Science_and_Technology_%28DOST%29_-_Seal.svg/240px-Department_of_Science_and_Technology_%28DOST%29_-_Seal.svg.png" alt="DOST Logo" class="brand-logo" onerror="this.style.display='none'">
+                <h1>Air Quality & Temp Monitoring</h1>
+            </div>
+            
+            <div class="welcome-text">
+                Welcome! Breathe Easy and Work Comfortably
+            </div>
+        </div>
+
+        <!-- Top Row: IT Style Metric Cards (Clickable for Info) -->
+        <div class="metrics-row">
+            <div class="metric-card" onclick="openModal('pm25')">
+                <div class="card-header">
+                    <div class="card-icon">🌫️</div>
+                </div>
+                <div class="card-title">PM2.5 DUST</div>
+                <div class="card-subtext">Limit: 35 µg/m³ (DENR)</div>
+                <div class="card-value" id="val-pm25">--</div>
+                <div class="progress-track"><div class="progress-fill" id="bar-pm25"></div></div>
+                <div class="action-text" id="action-pm25">Connecting...</div>
+                
+                <!-- Game Trigger Button (Stops propagation to avoid opening Info modal) -->
+                <button class="play-btn" onclick="openGame('pm25'); event.stopPropagation();">🎮 Play Filter Sim</button>
+            </div>
+
+            <div class="metric-card" onclick="openModal('co2')">
+                <div class="card-header">
+                    <div class="card-icon">💨</div>
+                </div>
+                <div class="card-title">TRUE CO2</div>
+                <div class="card-subtext">Limit: 1000 ppm (ASHRAE)</div>
+                <div class="card-value" id="val-co2">--</div>
+                <div class="progress-track"><div class="progress-fill" id="bar-co2"></div></div>
+                <div class="action-text" id="action-co2">Connecting...</div>
+                
+                <button class="play-btn" onclick="openGame('co2'); event.stopPropagation();">🎮 Play Ventilation Sim</button>
+            </div>
+
+            <div class="metric-card" onclick="openModal('voc')">
+                <div class="card-header">
+                    <div class="card-icon">☣️</div>
+                </div>
+                <div class="card-title">VOC LEVELS</div>
+                <div class="card-subtext">Limit: 400 Analog</div>
+                <div class="card-value" id="val-voc">--</div>
+                <div class="progress-track"><div class="progress-fill" id="bar-voc"></div></div>
+                <div class="action-text" id="action-voc">Connecting...</div>
+
+                <button class="play-btn" onclick="openGame('voc'); event.stopPropagation();">🎮 Play Hazmat Dodge</button>
+            </div>
+
+            <div class="metric-card" onclick="openModal('temp')">
+                <div class="card-header">
+                    <div class="card-icon">🌡️</div>
+                </div>
+                <div class="card-title">TEMPERATURE</div>
+                <div class="card-subtext">Optimal: 18-30 °C</div>
+                <div class="card-value" id="val-temp">--</div>
+                <div class="progress-track"><div class="progress-fill" id="bar-temp"></div></div>
+                <div class="action-text" id="action-temp">Connecting...</div>
+
+                <button class="play-btn" onclick="openGame('temp'); event.stopPropagation();">🎮 Play Thermal Balancer</button>
+            </div>
+
+            <div class="metric-card" onclick="openModal('hum')">
+                <div class="card-header">
+                    <div class="card-icon">💧</div>
+                </div>
+                <div class="card-title">HUMIDITY</div>
+                <div class="card-subtext">Optimal: 40-65 %</div>
+                <div class="card-value" id="val-hum">--</div>
+                <div class="progress-track"><div class="progress-fill" id="bar-hum"></div></div>
+                <div class="action-text" id="action-hum">Connecting...</div>
+
+                <button class="play-btn" onclick="openGame('hum'); event.stopPropagation();">🎮 Play Moisture Control</button>
+            </div>
+        </div>
+
+        <!-- Bottom Row: Charts -->
+        <div class="charts-row">
+            <div class="chart-panel" id="panel-health">
+                <div class="chart-header-wrap">
+                    <div class="chart-title">System Health & Status</div>
+                    <button class="expand-btn" onclick="openChartModal('health')" title="Expand Chart">⛶</button>
+                </div>
+                <div id="donut-chart" class="donut-container"></div>
+                <div id="health-info-text" class="health-info">Awaiting sensor data to analyze system health...</div>
+            </div>
+            
+            <div class="chart-panel" id="panel-trends">
+                <div class="chart-header-wrap">
+                    <div class="chart-title">Environmental Trends (Last 20 Readings)</div>
+                    <button class="expand-btn" onclick="openChartModal('trends')" title="Expand Chart">⛶</button>
+                </div>
+                <div id="line-chart" class="line-container"></div>
+            </div>
+        </div>
+
+        <div class="footer-info" id="last-update">Establishing secure connection to cloud...</div>
+    </div>
+
+    <!-- Info Modal Overlay (For Scientific Info) -->
+    <div class="modal-overlay" id="infoModal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeModal(true)">&times;</button>
+            <h2 class="modal-header" id="modalTitle">Sensor Name</h2>
+            <div class="modal-body" id="modalBody">
+                Health and scientific impact information will appear here.
+            </div>
+            <div class="modal-source" id="modalSource">
+                <strong>Source:</strong> Regulatory citation will appear here.
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart Modal Overlay -->
+    <div class="modal-overlay" id="chartModal" onclick="closeChartModal(event)">
+        <div class="modal-content chart-modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeChartModal(true)">&times;</button>
+            <h2 class="modal-header" id="chartModalTitle">Chart Title</h2>
+            <div id="modal-chart-canvas" style="width: 100%; height: 50vh; min-height: 300px;"></div>
+            <div id="modal-health-info" class="health-info" style="display: none;"></div>
+        </div>
+    </div>
+
+    <!-- Game Modal Overlay (For Mini-Games) -->
+    <div class="modal-overlay" id="gameModal" onclick="closeGame(event)">
+        <div class="modal-content" style="max-width: 450px;" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeGame(true)">&times;</button>
+            
+            <h2 class="modal-header" id="gameTitle" style="justify-content: center; margin-bottom: 5px;">Game Title</h2>
+            <div class="game-stats">
+                <div>Score: <span id="scoreDisplay" style="color: var(--dost-blue);">0</span></div>
+                <div>Best: <span id="highScoreDisplay" style="color: var(--status-warn);">0</span></div>
+                <div>Lives: <span id="livesDisplay" style="color: var(--status-danger);">3</span></div>
+            </div>
+
+            <div class="canvas-wrapper">
+                <canvas id="gameCanvas" width="350" height="450"></canvas>
+                
+                <!-- Start Screen Overlay -->
+                <div id="startScreen" class="canvas-overlay">
+                    <h3 id="startTitle" style="font-family:'Nunito'; color:var(--dost-blue); font-size:24px; margin-top:0;">Ready?</h3>
+                    <p id="startInstructions" style="font-weight:600; color:var(--text-main); font-size:15px; margin-bottom:25px;">Instructions here.</p>
+                    <button class="play-btn" style="background:var(--dost-blue); color:white; width:auto; padding: 12px 30px;" onclick="startGame()">Start Game</button>
+                </div>
+
+                <!-- Game Over Screen Overlay -->
+                <div id="gameOverScreen" class="canvas-overlay" style="display:none;">
+                    <h3 style="font-family:'Nunito'; color:var(--status-danger); font-size:28px; margin-top:0;">GAME OVER</h3>
+                    <p style="font-weight:700; color:var(--text-main); font-size:18px; margin-bottom: 5px;">Score: <span id="finalScore" style="color:var(--dost-blue); font-size:24px;">0</span></p>
+                    <p style="font-weight:700; color:var(--text-muted); font-size:14px; margin-top: 0;">High Score: <span id="finalHighScore" style="color:var(--status-warn);">0</span></p>
+                    <button class="play-btn" style="background:var(--dost-blue); color:white; width:auto; padding: 12px 30px; margin-top: 15px;" onclick="startGame()">Play Again</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // SYSTEM CONFIGURATION
+        // ==========================================
+        const channelID = '3415500'; 
+        
+        const limits = {
+            pm25: { max: 50, caution: 25, danger: 35 },
+            co2:  { max: 2000, caution: 800, danger: 1000 },
+            voc:  { max: 500, caution: 300, danger: 400 },
+            temp: { max: 50, caution: 30, danger: 32, min: 18 },
+            hum:  { max: 100, caution: 65, danger: 70, min: 40 }
+        };
+
+        // Modal Content Dictionary
+        const sensorInfo = {
+            pm25: {
+                title: "🌫️ Particulate Matter (PM2.5)",
+                body: "Fine inhalable particles with diameters that are generally 2.5 micrometers and smaller. These microscopic particles can bypass the nose and throat, penetrating deep into the lungs and even entering the bloodstream. Long-term exposure is heavily linked to severe cardiovascular diseases, asthma, and reduced lung function.",
+                source: "<strong>Philippine Clean Air Act (RA 8749) / DENR DAO 2020-14:</strong> Officially classifies PM2.5 levels exceeding 35 µg/m³ as dangerous for sensitive groups.<br><br><strong>WHO 2021 Air Quality Guidelines:</strong> Recommends a much stricter 24-hour safe exposure limit of 15 µg/m³."
+            },
+            co2: {
+                title: "💨 Carbon Dioxide (CO2)",
+                body: "A colorless gas indicating indoor ventilation quality. Elevated indoor CO2 levels directly correlate with decreased cognitive function, lethargy, poor decision-making, and an increased risk of airborne viral transmission due to stagnant air.",
+                source: "<strong>ASHRAE Standard 62.1 (Ventilation for Acceptable IAQ):</strong> Recommends keeping indoor CO2 levels below 1000 ppm to maintain optimal cognitive performance and ensure adequate fresh air exchange in commercial and educational environments."
+            },
+            voc: {
+                title: "☣️ Volatile Organic Compounds (VOC)",
+                body: "Harmful gases emitted from certain solids or liquids (such as paints, cleaning supplies, office equipment, and building materials). High concentrations lead to 'Sick Building Syndrome', resulting in immediate headaches, nausea, eye irritation, and long-term respiratory sensitivity.",
+                source: "<strong>WHO Guidelines for Indoor Air Quality & US EPA:</strong> Acceptable ambient levels for indoor occupational spaces are generally recommended to remain below 300-400 ppb to prevent acute physiological reactions."
+            },
+            temp: {
+                title: "🌡️ Ambient Temperature",
+                body: "Crucial for maintaining occupational health, preventing thermal stress on human occupants, and ensuring active IT equipment (servers, routers, microcontrollers) do not experience thermal throttling or hardware failure.",
+                source: "<strong>ASHRAE Standard 55 (Thermal Environmental Conditions):</strong> Optimal indoor operating ranges for human comfort and productivity fall between 22°C and 27°C, depending on the relative humidity and clothing insulation."
+            },
+            hum: {
+                title: "💧 Relative Humidity",
+                body: "The amount of moisture in the air. High humidity (above 65%) promotes dangerous mold growth, structural damage, and exacerbates respiratory issues. Abnormally low humidity (below 30%) causes skin and eye irritation and exponentially increases the risk of Electrostatic Discharge (ESD) damage to sensitive electronics.",
+                source: "<strong>ASHRAE Standard 55 & EPA:</strong> Recommended indoor relative humidity should be maintained between 40% and 60% for maximum biological comfort and structural safety."
+            }
+        };
+
+        // Info Modal Logic
+        function openModal(sensorType) {
+            const data = sensorInfo[sensorType];
+            if(data) {
+                document.getElementById('modalTitle').innerHTML = data.title;
+                document.getElementById('modalBody').innerHTML = data.body;
+                document.getElementById('modalSource').innerHTML = data.source;
+                document.getElementById('infoModal').classList.add('show');
+            }
+        }
+
+        function closeModal(force = false) {
+            document.getElementById('infoModal').classList.remove('show');
+        }
+
+        // ==========================================
+        // CHART CONFIGURATIONS
+        // ==========================================
+        const donutChart = echarts.init(document.getElementById('donut-chart'));
+        const lineChart = echarts.init(document.getElementById('line-chart'));
+        
+        // Setup the invisible chart inside the modal
+        const modalChart = echarts.init(document.getElementById('modal-chart-canvas'));
+        let currentOpenChart = null;
+
+        const donutOption = {
+            series: [{
+                type: 'gauge',
+                startAngle: 90,
+                endAngle: -270,
+                pointer: { show: false },
+                progress: { show: true, overlap: false, roundCap: true, clip: false, itemStyle: { color: '#4caf50' } },
+                axisLine: { lineStyle: { width: 15, color: [[1, '#333']] } },
+                splitLine: { show: false },
+                axisTick: { show: false },
+                axisLabel: { show: false },
+                data: [{ value: 0, name: 'WAITING', title: { offsetCenter: ['0%', '20%'], color: '#888', fontSize: 14, fontFamily: 'Inter' } }],
+                detail: { width: 50, height: 14, fontSize: 32, fontWeight: 700, fontFamily: 'Inter', color: '#e0e0e0', formatter: '{value}%', offsetCenter: ['0%', '-10%'] }
+            }]
+        };
+        donutChart.setOption(donutOption);
+
+        const lineOption = {
+            tooltip: { trigger: 'axis' },
+            legend: { data: ['PM2.5', 'CO2 (Scaled x0.1)'], textStyle: { color: '#888', fontFamily: 'Inter' }, bottom: 0 },
+            grid: { left: '3%', right: '4%', bottom: '15%', top: '5%', containLabel: true },
+            xAxis: { type: 'category', boundaryGap: false, data: [], axisLabel: { color: '#888', fontFamily: 'Inter' } },
+            yAxis: { type: 'value', splitLine: { lineStyle: { color: '#333' } }, axisLabel: { color: '#888', fontFamily: 'Inter' } },
+            series: [
+                { name: 'PM2.5', type: 'line', smooth: true, itemStyle: { color: '#2196f3' }, data: [] },
+                { name: 'CO2 (Scaled x0.1)', type: 'line', smooth: true, itemStyle: { color: '#ff9800' }, data: [] }
+            ]
+        };
+        lineChart.setOption(lineOption);
+
+        // ==========================================
+        // DATA FETCHING & UI UPDATE LOGIC
+        // ==========================================
+        async function fetchHistoricalData() {
+            const url = `https://api.thingspeak.com/channels/${channelID}/feeds.json?results=20`;
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                const feeds = data.feeds;
+
+                if (feeds.length === 0) return;
+
+                const times = [];
+                const pm25Data = [];
+                const co2Data = [];
+
+                feeds.forEach(feed => {
+                    const date = new Date(feed.created_at);
+                    times.push(date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
+                    pm25Data.push(feed.field2 || 0);
+                    co2Data.push((feed.field1 || 0) / 10); 
+                });
+
+                lineChart.setOption({ xAxis: { data: times }, series: [{ data: pm25Data }, { data: co2Data }] });
+
+                const latest = feeds[feeds.length - 1];
+                let highestThreat = 0; 
+
+                highestThreat = Math.max(highestThreat, updateProgressBar('pm25', latest.field2, limits.pm25));
+                highestThreat = Math.max(highestThreat, updateProgressBar('co2', latest.field1, limits.co2));
+                highestThreat = Math.max(highestThreat, updateProgressBar('voc', latest.field3, limits.voc));
+                highestThreat = Math.max(highestThreat, updateProgressBar('temp', latest.field4, limits.temp, true));
+                highestThreat = Math.max(highestThreat, updateProgressBar('hum', latest.field5, limits.hum, true));
+
+                updateDonutChart(highestThreat);
+
+                // If the user currently has the trend modal open, sync its data too
+                if (currentOpenChart === 'trends') {
+                    modalChart.setOption(lineChart.getOption(), true);
+                }
+
+                const lastDate = new Date(latest.created_at);
+                document.getElementById('last-update').innerText = "Last Synchronized: " + lastDate.toLocaleString() + " | Status: ONLINE";
+
+            } catch (error) {
+                console.error("Cloud Error: ", error);
+                document.getElementById('last-update').innerText = "SYSTEM OFFLINE: Night Shift Deep Sleep Active or Network Error.";
+            }
+        }
+
+        function updateProgressBar(sensor, valStr, limitObj, isMinMax = false) {
+            const valEl = document.getElementById('val-' + sensor);
+            const barEl = document.getElementById('bar-' + sensor);
+            const actionEl = document.getElementById('action-' + sensor);
+            
+            if (!valStr) {
+                actionEl.innerText = "Please check ESP32 / sensor wiring.";
+                actionEl.style.color = "var(--status-warn)";
+                return 0;
+            }
+            
+            const val = parseFloat(valStr).toFixed(1);
+            valEl.innerText = val;
+
+            let percent = (val / limitObj.max) * 100;
+            if (percent > 100) percent = 100;
+            barEl.style.width = percent + '%';
+
+            let isDanger = isMinMax ? (val < limitObj.min || val > limitObj.danger) : (val > limitObj.danger);
+
+            if (isDanger) {
+                barEl.style.backgroundColor = 'var(--status-danger)';
+                valEl.style.color = 'var(--status-danger)';
+                actionEl.innerText = "CRITICAL: Please ventilate & check area!";
+                actionEl.style.color = 'var(--status-danger)';
+                return 2;
+            } else if (val > limitObj.caution) {
+                barEl.style.backgroundColor = 'var(--status-warn)';
+                valEl.style.color = 'var(--status-warn)';
+                actionEl.innerText = "WARNING: Please monitor levels closely.";
+                actionEl.style.color = 'var(--status-warn)';
+                return 1;
+            } else {
+                barEl.style.backgroundColor = 'var(--status-safe)';
+                valEl.style.color = 'var(--dost-blue)';
+                actionEl.innerText = "System Normal. No action required.";
+                actionEl.style.color = 'var(--text-muted)';
+                return 0;
+            }
+        }
+
+        function updateDonutChart(threat) {
+            let color = '#4caf50'; 
+            let label = 'SAFE';
+            let score = 100;
+            let infoText = "All environmental parameters are currently within safe regulatory limits. No hazards detected.";
+            let infoBg = "rgba(76, 175, 80, 0.1)"; // Safe green background tint
+            let infoColor = "#4caf50";
+
+            if (threat === 2) { 
+                color = '#f44336'; 
+                label = 'DANGER'; 
+                score = 15; 
+                infoText = "CRITICAL: Hazardous environmental conditions detected! Immediate ventilation or evacuation recommended.";
+                infoBg = "rgba(244, 67, 54, 0.1)"; // Danger red background tint
+                infoColor = "#f44336";
+            }
+            else if (threat === 1) { 
+                color = '#ff9800'; 
+                label = 'WARN'; 
+                score = 65; 
+                infoText = "CAUTION: One or more parameters have exceeded optimal levels. Monitor the area closely for potential hazards.";
+                infoBg = "rgba(255, 152, 0, 0.1)"; // Warn orange background tint
+                infoColor = "#ff9800";
+            }
+
+            // Update Donut Chart
+            donutChart.setOption({
+                series: [{
+                    data: [{ value: score, name: label, title: { color: '#888', fontFamily: 'Inter' } }],
+                    progress: { itemStyle: { color: color } }
+                }]
+            });
+
+            // Update Dynamic Info Box below it
+            const healthInfoEl = document.getElementById('health-info-text');
+            healthInfoEl.innerText = infoText;
+            healthInfoEl.style.backgroundColor = infoBg;
+            healthInfoEl.style.color = infoColor;
+            healthInfoEl.style.border = `1px solid ${infoColor}`;
+            
+            // Sync modal if open
+            if (currentOpenChart === 'health') {
+                modalChart.setOption(donutChart.getOption(), true);
+                const modalInfo = document.getElementById('modal-health-info');
+                modalInfo.innerText = infoText;
+                modalInfo.style.backgroundColor = infoBg;
+                modalInfo.style.color = infoColor;
+                modalInfo.style.border = `1px solid ${infoColor}`;
+            }
+        }
+
+        // Chart Modal Logic
+        function openChartModal(chartType) {
+            currentOpenChart = chartType;
+            const modal = document.getElementById('chartModal');
+            const title = document.getElementById('chartModalTitle');
+            const infoBox = document.getElementById('modal-health-info');
+
+            modal.classList.add('show');
+            modalChart.clear();
+
+            if (chartType === 'health') {
+                title.innerText = "System Health & Status";
+                modalChart.setOption(donutChart.getOption(), true); 
+                
+                const sourceInfo = document.getElementById('health-info-text');
+                infoBox.innerText = sourceInfo.innerText;
+                infoBox.style.backgroundColor = sourceInfo.style.backgroundColor;
+                infoBox.style.color = sourceInfo.style.color;
+                infoBox.style.border = sourceInfo.style.border;
+                infoBox.style.display = "block";
+            } else if (chartType === 'trends') {
+                title.innerText = "Environmental Trends (Last 20 Readings)";
+                modalChart.setOption(lineChart.getOption(), true); 
+                infoBox.style.display = "none";
+            }
+
+            setTimeout(() => { modalChart.resize(); }, 50);
+        }
+
+        function closeChartModal(event) {
+            document.getElementById('chartModal').classList.remove('show');
+            currentOpenChart = null;
+        }
+
+        // Resize handler for all charts
+        window.addEventListener('resize', function() {
+            donutChart.resize();
+            lineChart.resize();
+            modalChart.resize();
+        });
+
+        // Initialize Fetch Loop
+        fetchHistoricalData();
+        setInterval(fetchHistoricalData, 15000);
+
+        // ==========================================
+        // MINI-GAME ENGINE LOGIC
+        // ==========================================
+        
+        // Game Configuration Dictionary
+        const GAME_CONFIGS = {
+            'pm25': {
+                title: 'Dust Scrubber',
+                instructions: 'Catch the Dust (🌫️) to filter it.<br>Avoid dropping dust!',
+                goodEmoji: '🌫️', 
+                badEmoji: '❌', 
+                missGoodPenalty: true, // Missing good costs a life
+                speed: 3
+            },
+            'co2': {
+                title: 'O2 Balancer',
+                instructions: 'Catch Fresh Air (🍃).<br>Avoid Toxic CO2 (💨)!',
+                goodEmoji: '🍃',
+                badEmoji: '💨',
+                missGoodPenalty: false, 
+                speed: 3.5
+            },
+            'voc': {
+                title: 'Hazmat Dodge',
+                instructions: 'Catch Clean Filters (🛡️).<br>DODGE the Biohazards (☣️)!',
+                goodEmoji: '🛡️',
+                badEmoji: '☣️',
+                missGoodPenalty: false,
+                speed: 4
+            },
+            'temp': {
+                title: 'Thermal Cooler',
+                instructions: 'Catch the Ice (❄️) to cool down.<br>Avoid the Fire (🔥)!',
+                goodEmoji: '❄️',
+                badEmoji: '🔥',
+                missGoodPenalty: false,
+                speed: 4.5
+            },
+            'hum': {
+                title: 'Moisture Control',
+                instructions: 'Catch Water Drops (💧).<br>Avoid Mold Spores (🦠)!',
+                goodEmoji: '💧',
+                badEmoji: '🦠',
+                missGoodPenalty: false,
+                speed: 3.5
+            }
+        };
+
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        let animationId = null;
+        let currentMode = null;
+        let isPlaying = false;
+        
+        let score = 0;
+        let lives = 3;
+        let entities = [];
+        let frameCount = 0;
+
+        const player = {
+            x: canvas.width / 2 - 30,
+            y: canvas.height - 40,
+            width: 60,
+            height: 15,
+            color: '#2196f3' // Match DOST blue in dark theme
+        };
+
+        // Input Controls
+        canvas.addEventListener('mousemove', (e) => {
+            if(!isPlaying) return;
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const mouseX = (e.clientX - rect.left) * scaleX;
+            player.x = mouseX - player.width / 2;
+            if (player.x < 0) player.x = 0;
+            if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+        });
+
+        canvas.addEventListener('touchmove', (e) => {
+            if(!isPlaying) return;
+            e.preventDefault(); 
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const touchX = (e.touches[0].clientX - rect.left) * scaleX;
+            player.x = touchX - player.width / 2;
+            if (player.x < 0) player.x = 0;
+            if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+        }, { passive: false });
+
+        function loadHighScore() {
+            return parseInt(localStorage.getItem('dost_high_score') || '0', 10);
+        }
+
+        function saveHighScore(newScore) {
+            let currentHigh = loadHighScore();
+            if (newScore > currentHigh) {
+                localStorage.setItem('dost_high_score', newScore);
+                return newScore;
+            }
+            return currentHigh;
+        }
+
+        function openGame(mode) {
+            currentMode = GAME_CONFIGS[mode];
+            document.getElementById('gameTitle').innerText = currentMode.title;
+            document.getElementById('startTitle').innerText = currentMode.title;
+            document.getElementById('startInstructions').innerHTML = currentMode.instructions;
+            
+            document.getElementById('highScoreDisplay').innerText = loadHighScore();
+
+            document.getElementById('gameModal').classList.add('show');
+            document.getElementById('startScreen').style.display = 'flex';
+            document.getElementById('gameOverScreen').style.display = 'none';
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawPlayer();
+        }
+
+        function closeGame(force = false) {
+            document.getElementById('gameModal').classList.remove('show');
+            isPlaying = false;
+            cancelAnimationFrame(animationId);
+        }
+
+        function startGame() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('gameOverScreen').style.display = 'none';
+            
+            score = 0;
+            lives = 3;
+            entities = [];
+            frameCount = 0;
+            player.x = canvas.width / 2 - player.width / 2;
+            
+            document.getElementById('highScoreDisplay').innerText = loadHighScore();
+            updateHUD();
+            isPlaying = true;
+            gameLoop();
+        }
+
+        function updateHUD() {
+            document.getElementById('scoreDisplay').innerText = score;
+            document.getElementById('livesDisplay').innerText = lives;
+        }
+
+        function gameOver() {
+            isPlaying = false;
+            cancelAnimationFrame(animationId);
+            
+            // Handle High Score saving locally
+            let bestScore = saveHighScore(score);
+
+            document.getElementById('gameOverScreen').style.display = 'flex';
+            document.getElementById('finalScore').innerText = score;
+            document.getElementById('finalHighScore').innerText = bestScore;
+        }
+
+        function spawnEntity() {
+            const spawnRate = Math.max(30, 60 - Math.floor(score / 5)); 
+            if (frameCount % spawnRate === 0) {
+                const isGood = currentMode.title === 'Dust Scrubber' ? true : Math.random() > 0.3;
+                entities.push({
+                    x: Math.random() * (canvas.width - 24) + 12,
+                    y: -20,
+                    type: isGood ? 'good' : 'bad',
+                    emoji: isGood ? currentMode.goodEmoji : currentMode.badEmoji,
+                    speed: currentMode.speed + Math.random() * 2 + (score * 0.05),
+                    size: 24 
+                });
+            }
+        }
+
+        function drawPlayer() {
+            ctx.fillStyle = player.color;
+            ctx.beginPath();
+            ctx.roundRect(player.x, player.y, player.width, player.height, 8);
+            ctx.fill();
+
+            let grad = ctx.createLinearGradient(0, player.y - 20, 0, player.y);
+            grad.addColorStop(0, 'rgba(0, 198, 255, 0)');
+            grad.addColorStop(1, 'rgba(0, 198, 255, 0.4)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(player.x, player.y - 20, player.width, 20);
+        }
+
+        function gameLoop() {
+            if (!isPlaying) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            frameCount++;
+
+            drawPlayer();
+            spawnEntity();
+
+            for (let i = entities.length - 1; i >= 0; i--) {
+                let ent = entities[i];
+                ent.y += ent.speed;
+
+                ctx.font = `${ent.size}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(ent.emoji, ent.x, ent.y);
+
+                const hitX = ent.x > player.x - 10 && ent.x < player.x + player.width + 10;
+                const hitY = ent.y + ent.size/2 > player.y && ent.y < player.y + player.height;
+
+                if (hitX && hitY) {
+                    if (ent.type === 'good') {
+                        score += 10;
+                    } else {
+                        lives -= 1; 
+                        drawHitFlash();
+                    }
+                    entities.splice(i, 1);
+                    updateHUD();
+                } else if (ent.y > canvas.height + 20) {
+                    if (ent.type === 'good' && currentMode.missGoodPenalty) {
+                        lives -= 1; 
+                        drawHitFlash();
+                    }
+                    entities.splice(i, 1);
+                    updateHUD();
+                }
+            }
+
+            if (lives <= 0) {
+                gameOver();
+            } else {
+                animationId = requestAnimationFrame(gameLoop);
+            }
+        }
+
+        function drawHitFlash() {
+            ctx.fillStyle = 'rgba(220, 53, 69, 0.3)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+    </script>
 </body>
 </html>
